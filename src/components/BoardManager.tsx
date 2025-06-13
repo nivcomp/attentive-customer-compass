@@ -1,9 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useDynamicBoards } from "@/hooks/useDynamicBoards";
-import { useBoards } from "@/hooks/useBoards";
+import { useBoardManagerData } from "@/hooks/useBoardManagerData";
 import BoardCreator from "./BoardCreator";
 import BoardPermissionsManager from "./BoardPermissionsManager";
 import BoardManagerStats from "./BoardManagerStats";
@@ -11,83 +10,23 @@ import RegularBoardsList from "./RegularBoardsList";
 import CustomBoardsList from "./CustomBoardsList";
 import EmptyBoardsState from "./EmptyBoardsState";
 
-interface CustomBoard {
-  id: string;
-  name: string;
-  description?: string;
-  type: string;
-  fields: any[];
-  createdAt: string;
-}
-
 const BoardManager = () => {
-  const [customBoards, setCustomBoards] = useState<CustomBoard[]>([]);
-  const [showCreator, setShowCreator] = useState(false);
-  const [selectedBoardForPermissions, setSelectedBoardForPermissions] = useState<string | null>(null);
-  
-  const { boards: dynamicBoards, loading: dynamicLoading } = useDynamicBoards();
-  const { boards: regularBoards, loading: regularLoading } = useBoards();
-
-  // טעינת בורדים מותאמים מ-localStorage
-  useEffect(() => {
-    const savedBoards = localStorage.getItem('customBoards');
-    if (savedBoards) {
-      try {
-        setCustomBoards(JSON.parse(savedBoards));
-      } catch (error) {
-        console.error('Error loading custom boards:', error);
-      }
-    }
-  }, []);
-
-  const handleBoardCreated = (boardId: string) => {
-    // רענון הרשימה
-    const savedBoards = localStorage.getItem('customBoards');
-    if (savedBoards) {
-      try {
-        setCustomBoards(JSON.parse(savedBoards));
-      } catch (error) {
-        console.error('Error loading custom boards:', error);
-      }
-    }
-  };
-
-  const deleteBoardSettings = (boardId: string) => {
-    const updatedBoards = customBoards.filter(board => board.id !== boardId);
-    setCustomBoards(updatedBoards);
-    localStorage.setItem('customBoards', JSON.stringify(updatedBoards));
-  };
-
-  const getBoardTypeLabel = (type: string) => {
-    const types: Record<string, string> = {
-      companies: 'חברות',
-      contacts: 'אנשי קשר',
-      deals: 'עסקאות',
-      leads: 'לידים'
-    };
-    return types[type] || type;
-  };
-
-  const groupBoardsByType = () => {
-    const grouped: Record<string, CustomBoard[]> = {};
-    customBoards.forEach(board => {
-      if (!grouped[board.type]) {
-        grouped[board.type] = [];
-      }
-      grouped[board.type].push(board);
-    });
-    return grouped;
-  };
-
-  const handleTogglePermissions = (boardId: string) => {
-    setSelectedBoardForPermissions(
-      selectedBoardForPermissions === boardId ? null : boardId
-    );
-  };
-
-  const groupedBoards = groupBoardsByType();
-  const totalBoards = dynamicBoards.length + regularBoards.length + customBoards.length;
-  const loading = dynamicLoading || regularLoading;
+  const {
+    customBoards,
+    showCreator,
+    setShowCreator,
+    selectedBoardForPermissions,
+    dynamicBoards,
+    regularBoards,
+    organizations,
+    groupBoardsByType,
+    totalBoards,
+    loading,
+    handleBoardCreated,
+    deleteBoardSettings,
+    getBoardTypeLabel,
+    handleTogglePermissions,
+  } = useBoardManagerData();
 
   if (loading) {
     return (
@@ -142,7 +81,7 @@ const BoardManager = () => {
 
       {/* בורדים מקובצים לפי סוג */}
       <CustomBoardsList
-        groupedBoards={groupedBoards}
+        groupedBoards={groupBoardsByType}
         onDeleteBoard={deleteBoardSettings}
         getBoardTypeLabel={getBoardTypeLabel}
       />
