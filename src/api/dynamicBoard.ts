@@ -96,7 +96,10 @@ export const dynamicBoardColumnsAPI = {
       .order('column_order', { ascending: true });
     
     if (error) throw error;
-    return data || [];
+    return (data || []).map(item => ({
+      ...item,
+      column_type: item.column_type as DynamicBoardColumn['column_type']
+    }));
   },
 
   async create(column: Omit<DynamicBoardColumn, 'id' | 'created_at'>): Promise<DynamicBoardColumn> {
@@ -107,7 +110,10 @@ export const dynamicBoardColumnsAPI = {
       .single();
     
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      column_type: data.column_type as DynamicBoardColumn['column_type']
+    };
   },
 
   async update(id: string, updates: Partial<Omit<DynamicBoardColumn, 'id' | 'created_at'>>): Promise<DynamicBoardColumn> {
@@ -119,7 +125,10 @@ export const dynamicBoardColumnsAPI = {
       .single();
     
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      column_type: data.column_type as DynamicBoardColumn['column_type']
+    };
   },
 
   async delete(id: string): Promise<void> {
@@ -142,7 +151,10 @@ export const dynamicBoardItemsAPI = {
       .order('item_order', { ascending: true });
     
     if (error) throw error;
-    return data || [];
+    return (data || []).map(item => ({
+      ...item,
+      data: item.data as Record<string, any>
+    }));
   },
 
   async create(item: Omit<DynamicBoardItem, 'id' | 'created_at' | 'updated_at'>): Promise<DynamicBoardItem> {
@@ -153,7 +165,10 @@ export const dynamicBoardItemsAPI = {
       .single();
     
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      data: data.data as Record<string, any>
+    };
   },
 
   async update(id: string, updates: Partial<Omit<DynamicBoardItem, 'id' | 'created_at'>>): Promise<DynamicBoardItem> {
@@ -165,7 +180,10 @@ export const dynamicBoardItemsAPI = {
       .single();
     
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      data: data.data as Record<string, any>
+    };
   },
 
   async delete(id: string): Promise<void> {
