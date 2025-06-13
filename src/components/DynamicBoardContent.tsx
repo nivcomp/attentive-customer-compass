@@ -2,13 +2,15 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Plus, LayoutGrid, Grid } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, LayoutGrid, Grid, Zap, Table, BarChart3 } from "lucide-react";
 import { DynamicBoard, DynamicBoardColumn, DynamicBoardItem } from "@/api/dynamicBoard";
 import { ViewType } from "./ViewSelector";
 import DynamicBoardCardsView from "./DynamicBoardCardsView";
 import DynamicBoardTableView from "./DynamicBoardTableView";
 import SettingsManager from "./SettingsManager";
 import DynamicBoardControls from "./DynamicBoardControls";
+import AutomationTab from "./AutomationTab";
 
 interface DynamicBoardContentProps {
   selectedBoard: DynamicBoard | null;
@@ -80,67 +82,106 @@ const DynamicBoardContent = ({
         </div>
       </div>
 
-      {/* Controls */}
-      <DynamicBoardControls
-        searchQuery={searchQuery}
-        onSearchChange={onSearchChange}
-        currentView={currentView}
-        onViewChange={onViewChange}
-        itemCount={filteredItems.length}
-      />
+      {/* Main Tabs */}
+      <Tabs defaultValue="data" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="data" className="flex items-center gap-2">
+            <Table className="h-4 w-4" />
+            נתונים
+          </TabsTrigger>
+          <TabsTrigger value="automations" className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            אוטומציות
+          </TabsTrigger>
+          <TabsTrigger value="analytics" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            ניתוחים
+          </TabsTrigger>
+        </TabsList>
 
-      <Separator />
-
-      {/* Content */}
-      <div className="animate-fade-in">
-        {currentView === 'table' && (
-          <DynamicBoardTableView
-            items={filteredItems}
-            columns={columns}
-            loading={isLoading}
-            onEditItem={(item) => console.log('Edit item:', item)}
-            onDeleteItem={(item) => console.log('Delete item:', item)}
-            onAddItem={() => console.log('Add item')}
-            boardId={selectedBoard.id}
-            onRefresh={onRefresh}
+        <TabsContent value="data" className="space-y-6">
+          {/* Controls */}
+          <DynamicBoardControls
+            searchQuery={searchQuery}
+            onSearchChange={onSearchChange}
+            currentView={currentView}
+            onViewChange={onViewChange}
+            itemCount={filteredItems.length}
           />
-        )}
-        
-        {currentView === 'cards' && (
-          <div className="bg-white rounded-lg border shadow-sm p-6">
-            <DynamicBoardCardsView
-              items={filteredItems}
-              columns={columns}
-              onEditItem={(item) => console.log('Edit item:', item)}
-              onDeleteItem={(item) => console.log('Delete item:', item)}
-            />
+
+          <Separator />
+
+          {/* Content */}
+          <div className="animate-fade-in">
+            {currentView === 'table' && (
+              <DynamicBoardTableView
+                items={filteredItems}
+                columns={columns}
+                loading={isLoading}
+                onEditItem={(item) => console.log('Edit item:', item)}
+                onDeleteItem={(item) => console.log('Delete item:', item)}
+                onAddItem={() => console.log('Add item')}
+                boardId={selectedBoard.id}
+                onRefresh={onRefresh}
+              />
+            )}
+            
+            {currentView === 'cards' && (
+              <div className="bg-white rounded-lg border shadow-sm p-6">
+                <DynamicBoardCardsView
+                  items={filteredItems}
+                  columns={columns}
+                  onEditItem={(item) => console.log('Edit item:', item)}
+                  onDeleteItem={(item) => console.log('Delete item:', item)}
+                />
+              </div>
+            )}
+            
+            {currentView === 'kanban' && (
+              <div className="bg-white rounded-lg border shadow-sm p-16 text-center">
+                <div className="max-w-sm mx-auto">
+                  <div className="w-12 h-12 mx-auto mb-4 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Grid className="h-6 w-6 text-gray-400" />
+                  </div>
+                  <h3 className="font-medium text-gray-900 mb-2">תצוגת קנבן</h3>
+                  <p className="text-sm text-gray-500">תצוגה זו תתווסף בהמשך</p>
+                </div>
+              </div>
+            )}
+            
+            {currentView === 'list' && (
+              <div className="bg-white rounded-lg border shadow-sm p-16 text-center">
+                <div className="max-w-sm mx-auto">
+                  <div className="w-12 h-12 mx-auto mb-4 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Grid className="h-6 w-6 text-gray-400" />
+                  </div>
+                  <h3 className="font-medium text-gray-900 mb-2">תצוגת רשימה</h3>
+                  <p className="text-sm text-gray-500">תצוגה זו תתווסף בהמשך</p>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-        
-        {currentView === 'kanban' && (
+        </TabsContent>
+
+        <TabsContent value="automations">
+          <AutomationTab 
+            boardId={selectedBoard.id} 
+            boardName={selectedBoard.name}
+          />
+        </TabsContent>
+
+        <TabsContent value="analytics">
           <div className="bg-white rounded-lg border shadow-sm p-16 text-center">
             <div className="max-w-sm mx-auto">
               <div className="w-12 h-12 mx-auto mb-4 bg-gray-100 rounded-lg flex items-center justify-center">
-                <Grid className="h-6 w-6 text-gray-400" />
+                <BarChart3 className="h-6 w-6 text-gray-400" />
               </div>
-              <h3 className="font-medium text-gray-900 mb-2">תצוגת קנבן</h3>
-              <p className="text-sm text-gray-500">תצוגה זו תתווסף בהמשך</p>
+              <h3 className="font-medium text-gray-900 mb-2">ניתוחים ודוחות</h3>
+              <p className="text-sm text-gray-500">תכונות ניתוח יתווספו בהמשך</p>
             </div>
           </div>
-        )}
-        
-        {currentView === 'list' && (
-          <div className="bg-white rounded-lg border shadow-sm p-16 text-center">
-            <div className="max-w-sm mx-auto">
-              <div className="w-12 h-12 mx-auto mb-4 bg-gray-100 rounded-lg flex items-center justify-center">
-                <Grid className="h-6 w-6 text-gray-400" />
-              </div>
-              <h3 className="font-medium text-gray-900 mb-2">תצוגת רשימה</h3>
-              <p className="text-sm text-gray-500">תצוגה זו תתווסף בהמשך</p>
-            </div>
-          </div>
-        )}
-      </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

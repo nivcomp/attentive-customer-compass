@@ -41,6 +41,50 @@ export type Database = {
           },
         ]
       }
+      automation_execution_log: {
+        Row: {
+          action_result: Json | null
+          automation_id: string | null
+          error_message: string | null
+          executed_at: string | null
+          execution_time_ms: number | null
+          id: string
+          status: string
+          trigger_data: Json | null
+          triggered_by_item_id: string | null
+        }
+        Insert: {
+          action_result?: Json | null
+          automation_id?: string | null
+          error_message?: string | null
+          executed_at?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          status: string
+          trigger_data?: Json | null
+          triggered_by_item_id?: string | null
+        }
+        Update: {
+          action_result?: Json | null
+          automation_id?: string | null
+          error_message?: string | null
+          executed_at?: string | null
+          execution_time_ms?: number | null
+          id?: string
+          status?: string
+          trigger_data?: Json | null
+          triggered_by_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_execution_log_automation_id_fkey"
+            columns: ["automation_id"]
+            isOneToOne: false
+            referencedRelation: "board_automations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       automation_logs: {
         Row: {
           automation_id: string
@@ -114,6 +158,59 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      board_automations: {
+        Row: {
+          action_config: Json
+          action_type: string
+          board_id: string | null
+          condition_config: Json | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          trigger_config: Json
+          trigger_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          action_config?: Json
+          action_type: string
+          board_id?: string | null
+          condition_config?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          trigger_config?: Json
+          trigger_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          action_config?: Json
+          action_type?: string
+          board_id?: string | null
+          condition_config?: Json | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          trigger_config?: Json
+          trigger_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_automations_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "dynamic_boards"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       board_columns: {
         Row: {
@@ -988,6 +1085,36 @@ export type Database = {
           name?: string
           schema_name?: string
           subdomain?: string
+        }
+        Relationships: []
+      }
+      workflow_templates: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_public: boolean | null
+          name: string
+          template_data: Json
+        }
+        Insert: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          name: string
+          template_data?: Json
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          template_data?: Json
         }
         Relationships: []
       }

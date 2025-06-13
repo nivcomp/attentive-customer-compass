@@ -11,11 +11,13 @@ import {
   Trash2,
   Eye,
   Link,
-  Link2
+  Link2,
+  Zap
 } from "lucide-react";
 import CustomBoardBuilder from "./CustomBoardBuilder";
 import RelationshipBuilder from "./RelationshipBuilder";
 import RelationshipManager from "./RelationshipManager";
+import AutomationTab from "./AutomationTab";
 
 interface PageBoard {
   id: string;
@@ -38,6 +40,7 @@ const PageBoardManager: React.FC<PageBoardManagerProps> = ({ pageId, pageName })
   const [showBoardBuilder, setShowBoardBuilder] = useState(false);
   const [showSharedBoards, setShowSharedBoards] = useState(false);
   const [showRelationshipManager, setShowRelationshipManager] = useState(false);
+  const [showAutomations, setShowAutomations] = useState<string | null>(null);
 
   // Mock shared boards data
   const [sharedBoards] = useState<PageBoard[]>([
@@ -252,6 +255,16 @@ const PageBoardManager: React.FC<PageBoardManagerProps> = ({ pageId, pageName })
                 <Button variant="ghost" size="sm">
                   <Eye className="h-4 w-4" />
                 </Button>
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setShowAutomations(board.id)}
+                  className="text-purple-600 hover:text-purple-700"
+                >
+                  <Zap className="h-4 w-4" />
+                </Button>
+                
                 <Button variant="ghost" size="sm">
                   <Settings className="h-4 w-4" />
                 </Button>
@@ -316,6 +329,24 @@ const PageBoardManager: React.FC<PageBoardManagerProps> = ({ pageId, pageName })
         isOpen={showRelationshipManager}
         onClose={() => setShowRelationshipManager(false)}
       />
+
+      {/* Automation Manager Modal */}
+      <Dialog open={!!showAutomations} onOpenChange={() => setShowAutomations(null)}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-purple-600" />
+              אוטומציות לבורד
+            </DialogTitle>
+          </DialogHeader>
+          {showAutomations && (
+            <AutomationTab 
+              boardId={showAutomations}
+              boardName={pageBoards.find(b => b.id === showAutomations)?.name || 'בורד'}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
