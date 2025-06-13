@@ -7,17 +7,19 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Building, Palette } from "lucide-react";
 
+interface OrgSettings {
+  name: string;
+  logo_url: string;
+  primary_color: string;
+  secondary_color: string;
+  board_creation_policy: string;
+  default_board_permission: string;
+  require_board_approval: boolean;
+}
+
 interface GeneralSettingsTabProps {
-  orgSettings: {
-    name: string;
-    logo_url: string;
-    primary_color: string;
-    secondary_color: string;
-    board_creation_policy: string;
-    default_board_permission: string;
-    require_board_approval: boolean;
-  };
-  onSettingsChange: (updates: Partial<typeof orgSettings>) => void;
+  orgSettings: OrgSettings;
+  onSettingsChange: (updates: Partial<OrgSettings>) => void;
 }
 
 const GeneralSettingsTab = ({ orgSettings, onSettingsChange }: GeneralSettingsTabProps) => {

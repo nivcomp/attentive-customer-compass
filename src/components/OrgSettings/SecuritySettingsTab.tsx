@@ -6,13 +6,15 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Mail, Clock } from "lucide-react";
 
+interface SecuritySettings {
+  allowed_email_domains: string;
+  restrict_invitations_to_admins: boolean;
+  session_timeout_hours: number;
+}
+
 interface SecuritySettingsTabProps {
-  orgSettings: {
-    allowed_email_domains: string;
-    restrict_invitations_to_admins: boolean;
-    session_timeout_hours: number;
-  };
-  onSettingsChange: (updates: Partial<typeof orgSettings>) => void;
+  orgSettings: SecuritySettings;
+  onSettingsChange: (updates: Partial<SecuritySettings>) => void;
 }
 
 const SecuritySettingsTab = ({ orgSettings, onSettingsChange }: SecuritySettingsTabProps) => {
