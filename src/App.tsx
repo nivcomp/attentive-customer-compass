@@ -8,6 +8,7 @@ import Navigation from "./components/Navigation";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import DynamicBoards from "./pages/DynamicBoards";
+import BoardManagement from "./pages/BoardManagement";
 import Contacts from "./pages/Contacts";
 import Activities from "./pages/Activities";
 import Deals from "./pages/Deals";
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/deals" element={<Deals />} />
               <Route path="/dynamic-boards" element={<DynamicBoards />} />
               <Route path="/board-builder" element={<PlaceholderPage title="בונה לוחות" />} />
+              <Route path="/board-management" element={<BoardManagement />} />
               <Route path="/automations" element={<PlaceholderPage title="אוטומציות" />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
