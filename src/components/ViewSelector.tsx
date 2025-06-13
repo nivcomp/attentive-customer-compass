@@ -41,9 +41,9 @@ const ViewSelector = ({ currentView, onViewChange, itemCount }: ViewSelectorProp
   ];
 
   return (
-    <div className="flex items-center gap-2 p-2 bg-muted/30 rounded-lg">
+    <div className="flex items-center gap-3 p-1 bg-gray-50 rounded-lg border">
       <div className="flex items-center gap-1">
-        {views.map((view) => {
+        {views.map((view, index) => {
           const Icon = view.icon;
           const isActive = currentView === view.type;
           
@@ -53,19 +53,30 @@ const ViewSelector = ({ currentView, onViewChange, itemCount }: ViewSelectorProp
               variant={isActive ? "default" : "ghost"}
               size="sm"
               onClick={() => onViewChange(view.type)}
-              className="flex items-center gap-2"
+              className={`
+                flex items-center gap-2 transition-all duration-200 h-8
+                ${isActive 
+                  ? 'bg-white shadow-soft text-gray-900 hover:bg-white' 
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }
+              `}
               title={view.description}
             >
-              <Icon className="h-4 w-4" />
-              {view.label}
+              <Icon className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline text-xs font-medium">
+                {view.label}
+              </span>
             </Button>
           );
         })}
       </div>
       
       {itemCount !== undefined && (
-        <Badge variant="secondary" className="ml-auto">
-          {itemCount} פריטים
+        <Badge 
+          variant="secondary" 
+          className="ml-2 bg-blue-50 text-blue-700 border-blue-200 text-xs font-medium"
+        >
+          {itemCount.toLocaleString('he-IL')} פריטים
         </Badge>
       )}
     </div>
