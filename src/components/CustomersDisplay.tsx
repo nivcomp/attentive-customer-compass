@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCustomers } from "@/hooks/useCustomers";
-import { Users, Mail, Phone, RefreshCw } from "lucide-react";
+import { Users, Mail, Phone, RefreshCw, Building2, User } from "lucide-react";
 import AddCustomerDialog from "./AddCustomerDialog";
 
 const CustomersDisplay = () => {
@@ -58,6 +58,32 @@ const CustomersDisplay = () => {
     );
   }
 
+  const getCustomerTypeIcon = (type: string | null) => {
+    return type === 'business' ? <Building2 className="h-4 w-4" /> : <User className="h-4 w-4" />;
+  };
+
+  const getCustomerTypeLabel = (type: string | null) => {
+    return type === 'business' ? 'עסקי' : 'פרטי';
+  };
+
+  const getLeadSourceColor = (source: string | null) => {
+    switch (source) {
+      case 'web': return 'bg-blue-100 text-blue-800';
+      case 'phone': return 'bg-green-100 text-green-800';
+      case 'referral': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getLeadSourceLabel = (source: string | null) => {
+    switch (source) {
+      case 'web': return 'אתר';
+      case 'phone': return 'טלפון';
+      case 'referral': return 'הפניה';
+      default: return 'לא ידוע';
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -102,6 +128,11 @@ const CustomersDisplay = () => {
                   </div>
                   <div>
                     <div className="font-medium text-lg">{customer.name}</div>
+                    {customer.company_name && customer.customer_type === 'business' && (
+                      <div className="text-sm text-muted-foreground mb-1">
+                        {customer.company_name}
+                      </div>
+                    )}
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Mail className="h-4 w-4" />
@@ -117,6 +148,13 @@ const CustomersDisplay = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    {getCustomerTypeIcon(customer.customer_type)}
+                    <span className="text-sm">{getCustomerTypeLabel(customer.customer_type)}</span>
+                  </div>
+                  <Badge variant="outline" className={getLeadSourceColor(customer.lead_source)}>
+                    {getLeadSourceLabel(customer.lead_source)}
+                  </Badge>
                   <Badge variant="outline">
                     {customer.created_at 
                       ? new Date(customer.created_at).toLocaleDateString('he-IL')

@@ -256,8 +256,39 @@ export type Database = {
         }
         Relationships: []
       }
+      companies: {
+        Row: {
+          address: string | null
+          created_at: string | null
+          email: string | null
+          id: number
+          name: string
+          phone: string | null
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: number
+          name: string
+          phone?: string | null
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: number
+          name?: string
+          phone?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       contacts: {
         Row: {
+          company_id: number | null
           created_at: string | null
           customer_id: number
           email: string
@@ -266,6 +297,7 @@ export type Database = {
           phone: string | null
         }
         Insert: {
+          company_id?: number | null
           created_at?: string | null
           customer_id: number
           email: string
@@ -274,6 +306,7 @@ export type Database = {
           phone?: string | null
         }
         Update: {
+          company_id?: number | null
           created_at?: string | null
           customer_id?: number
           email?: string
@@ -283,6 +316,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "contacts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "companies"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "contacts_customer_id_fkey"
             columns: ["customer_id"]
             isOneToOne: false
@@ -291,26 +331,109 @@ export type Database = {
           },
         ]
       }
-      customers: {
+      custom_field_values: {
         Row: {
           created_at: string | null
-          email: string
+          entity_id: number
+          entity_type: string
+          field_id: number | null
+          field_value: string | null
           id: number
-          name: string
-          phone: string | null
+          updated_at: string | null
         }
         Insert: {
           created_at?: string | null
-          email: string
-          id?: never
-          name: string
-          phone?: string | null
+          entity_id: number
+          entity_type: string
+          field_id?: number | null
+          field_value?: string | null
+          id?: number
+          updated_at?: string | null
         }
         Update: {
           created_at?: string | null
+          entity_id?: number
+          entity_type?: string
+          field_id?: number | null
+          field_value?: string | null
+          id?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_field_values_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "custom_fields"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      custom_fields: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          entity_type: string
+          field_name: string
+          field_options: Json | null
+          field_type: string
+          id: number
+          is_required: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number | null
+          entity_type: string
+          field_name: string
+          field_options?: Json | null
+          field_type: string
+          id?: number
+          is_required?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number | null
+          entity_type?: string
+          field_name?: string
+          field_options?: Json | null
+          field_type?: string
+          id?: number
+          is_required?: boolean | null
+        }
+        Relationships: []
+      }
+      customers: {
+        Row: {
+          company_name: string | null
+          created_at: string | null
+          customer_type: string | null
+          email: string
+          id: number
+          lead_source: string | null
+          name: string
+          notes: string | null
+          phone: string | null
+        }
+        Insert: {
+          company_name?: string | null
+          created_at?: string | null
+          customer_type?: string | null
+          email: string
+          id?: never
+          lead_source?: string | null
+          name: string
+          notes?: string | null
+          phone?: string | null
+        }
+        Update: {
+          company_name?: string | null
+          created_at?: string | null
+          customer_type?: string | null
           email?: string
           id?: never
+          lead_source?: string | null
           name?: string
+          notes?: string | null
           phone?: string | null
         }
         Relationships: []

@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { Plus } from "lucide-react";
 import { useCustomers } from "@/hooks/useCustomers";
 
@@ -24,7 +26,11 @@ const AddCustomerDialog = ({ trigger }: AddCustomerDialogProps) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: ''
+    phone: '',
+    customer_type: 'private' as 'private' | 'business',
+    lead_source: 'web' as 'web' | 'phone' | 'referral',
+    company_name: '',
+    notes: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -50,12 +56,24 @@ const AddCustomerDialog = ({ trigger }: AddCustomerDialogProps) => {
       const result = await createCustomer({
         name: formData.name.trim(),
         email: formData.email.trim(),
-        phone: formData.phone.trim() || null
+        phone: formData.phone.trim() || null,
+        customer_type: formData.customer_type,
+        lead_source: formData.lead_source,
+        company_name: formData.company_name.trim() || null,
+        notes: formData.notes.trim() || null
       });
 
       if (result) {
         // Success - reset form and close dialog
-        setFormData({ name: '', email: '', phone: '' });
+        setFormData({ 
+          name: '', 
+          email: '', 
+          phone: '', 
+          customer_type: 'private',
+          lead_source: 'web',
+          company_name: '',
+          notes: ''
+        });
         setOpen(false);
       }
     } catch (error) {
@@ -66,7 +84,15 @@ const AddCustomerDialog = ({ trigger }: AddCustomerDialogProps) => {
   };
 
   const handleCancel = () => {
-    setFormData({ name: '', email: '', phone: '' });
+    setFormData({ 
+      name: '', 
+      email: '', 
+      phone: '', 
+      customer_type: 'private',
+      lead_source: 'web',
+      company_name: '',
+      notes: ''
+    });
     setOpen(false);
   };
 
@@ -80,7 +106,7 @@ const AddCustomerDialog = ({ trigger }: AddCustomerDialogProps) => {
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>הוסף לקוח חדש</DialogTitle>
           <DialogDescription>
@@ -99,6 +125,7 @@ const AddCustomerDialog = ({ trigger }: AddCustomerDialogProps) => {
                 required
               />
             </div>
+            
             <div className="grid gap-2">
               <Label htmlFor="email">אימייל *</Label>
               <Input
@@ -110,6 +137,7 @@ const AddCustomerDialog = ({ trigger }: AddCustomerDialogProps) => {
                 required
               />
             </div>
+            
             <div className="grid gap-2">
               <Label htmlFor="phone">טלפון</Label>
               <Input
@@ -118,6 +146,62 @@ const AddCustomerDialog = ({ trigger }: AddCustomerDialogProps) => {
                 value={formData.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 placeholder="050-123-4567"
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="customer_type">סוג לקוח</Label>
+              <Select 
+                value={formData.customer_type} 
+                onValueChange={(value) => handleInputChange('customer_type', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="בחר סוג לקוח" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="private">פרטי</SelectItem>
+                  <SelectItem value="business">עסקי</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="lead_source">מקור הליד</Label>
+              <Select 
+                value={formData.lead_source} 
+                onValueChange={(value) => handleInputChange('lead_source', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="בחר מקור הליד" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="web">אתר</SelectItem>
+                  <SelectItem value="phone">טלפון</SelectItem>
+                  <SelectItem value="referral">הפניה</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {formData.customer_type === 'business' && (
+              <div className="grid gap-2">
+                <Label htmlFor="company_name">שם החברה</Label>
+                <Input
+                  id="company_name"
+                  value={formData.company_name}
+                  onChange={(e) => handleInputChange('company_name', e.target.value)}
+                  placeholder="הזן שם החברה"
+                />
+              </div>
+            )}
+
+            <div className="grid gap-2">
+              <Label htmlFor="notes">הערות</Label>
+              <Textarea
+                id="notes"
+                value={formData.notes}
+                onChange={(e) => handleInputChange('notes', e.target.value)}
+                placeholder="הערות נוספות על הלקוח"
+                rows={3}
               />
             </div>
           </div>

@@ -8,6 +8,9 @@ type Contact = Database['public']['Tables']['contacts']['Row'];
 type Deal = Database['public']['Tables']['deals']['Row'];
 type Automation = Database['public']['Tables']['automations']['Row'];
 type AutomationLog = Database['public']['Tables']['automation_logs']['Row'];
+type Company = Database['public']['Tables']['companies']['Row'];
+type CustomField = Database['public']['Tables']['custom_fields']['Row'];
+type CustomFieldValue = Database['public']['Tables']['custom_field_values']['Row'];
 
 // API functions for customers
 export const customersAPI = {
@@ -58,6 +61,62 @@ export const customersAPI = {
   async delete(id: number): Promise<void> {
     const { error } = await supabase
       .from('customers')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+  }
+};
+
+// API functions for companies
+export const companiesAPI = {
+  async getAll(): Promise<Company[]> {
+    const { data, error } = await supabase
+      .from('companies')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getById(id: number): Promise<Company | null> {
+    const { data, error } = await supabase
+      .from('companies')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async create(company: Omit<Company, 'id' | 'created_at'>): Promise<Company> {
+    const { data, error } = await supabase
+      .from('companies')
+      .insert([company])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: number, updates: Omit<Partial<Company>, 'id' | 'created_at'>): Promise<Company> {
+    const { data, error } = await supabase
+      .from('companies')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: number): Promise<void> {
+    const { error } = await supabase
+      .from('companies')
       .delete()
       .eq('id', id);
     
@@ -291,5 +350,55 @@ export const automationLogsAPI = {
   }
 };
 
+// API functions for custom fields
+export const customFieldsAPI = {
+  async getByEntityType(entityType: string): Promise<CustomField[]> {
+    const { data, error } = await supabase
+      .from('custom_fields')
+      .select('*')
+      .eq('entity_type', entityType)
+      .order('display_order', { ascending: true });
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async create(field: Omit<CustomField, 'id' | 'created_at'>): Promise<CustomField> {
+    const { data, error } = await supabase
+      .from('custom_fields')
+      .insert([field])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  }
+};
+
+// API functions for custom field values
+export const customFieldValuesAPI = {
+  async getByEntity(entityType: string, entityId: number): Promise<CustomFieldValue[]> {
+    const { data, error } = await supabase
+      .from('custom_field_values')
+      .select('*')
+      .eq('entity_type', entityType)
+      .eq('entity_id', entityId);
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async upsert(value: Omit<CustomFieldValue, 'id' | 'created_at' | 'updated_at'>): Promise<CustomFieldValue> {
+    const { data, error } = await supabase
+      .from('custom_field_values')
+      .upsert([{ ...value, updated_at: new Date().toISOString() }])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  }
+};
+
 // Export types for use in components
-export type { Customer, Activity, Contact, Deal, Automation, AutomationLog };
+export type { Customer, Activity, Contact, Deal, Automation, AutomationLog, Company, CustomField, CustomFieldValue };
