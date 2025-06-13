@@ -122,7 +122,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-emerald-50">
-      <Navigation activeView={activeView} onViewChange={setActiveView} />
+      <Navigation />
       <div className="container mx-auto px-4 py-8">
         {renderContent()}
       </div>
