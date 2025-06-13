@@ -524,35 +524,51 @@ export type Database = {
           column_order: number
           column_type: string
           created_at: string | null
+          display_settings: Json | null
           id: string
           is_required: boolean | null
+          linked_board_id: string | null
           name: string
           options: Json | null
+          validation_rules: Json | null
         }
         Insert: {
           board_id?: string | null
           column_order?: number
           column_type?: string
           created_at?: string | null
+          display_settings?: Json | null
           id?: string
           is_required?: boolean | null
+          linked_board_id?: string | null
           name: string
           options?: Json | null
+          validation_rules?: Json | null
         }
         Update: {
           board_id?: string | null
           column_order?: number
           column_type?: string
           created_at?: string | null
+          display_settings?: Json | null
           id?: string
           is_required?: boolean | null
+          linked_board_id?: string | null
           name?: string
           options?: Json | null
+          validation_rules?: Json | null
         }
         Relationships: [
           {
             foreignKeyName: "dynamic_board_columns_board_id_fkey"
             columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "dynamic_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dynamic_board_columns_linked_board_id_fkey"
+            columns: ["linked_board_id"]
             isOneToOne: false
             referencedRelation: "dynamic_boards"
             referencedColumns: ["id"]

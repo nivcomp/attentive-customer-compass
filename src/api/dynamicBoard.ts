@@ -14,10 +14,13 @@ export interface DynamicBoardColumn {
   id: string;
   board_id: string;
   name: string;
-  column_type: 'text' | 'number' | 'date' | 'single_select' | 'multi_select' | 'status';
+  column_type: 'text' | 'number' | 'date' | 'single_select' | 'multi_select' | 'status' | 'file' | 'image' | 'board_link';
   column_order: number;
   options?: any;
   is_required: boolean;
+  linked_board_id?: string;
+  validation_rules?: any;
+  display_settings?: any;
   created_at: string;
 }
 
