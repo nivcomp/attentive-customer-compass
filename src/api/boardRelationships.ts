@@ -27,7 +27,7 @@ export const boardRelationshipsAPI = {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    return (data || []) as BoardRelationship[];
   },
 
   async getBySourceBoard(boardId: string): Promise<BoardRelationship[]> {
@@ -38,7 +38,7 @@ export const boardRelationshipsAPI = {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    return (data || []) as BoardRelationship[];
   },
 
   async getByTargetBoard(boardId: string): Promise<BoardRelationship[]> {
@@ -49,7 +49,7 @@ export const boardRelationshipsAPI = {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    return (data || []) as BoardRelationship[];
   },
 
   async create(relationship: Omit<BoardRelationship, 'id' | 'created_at'>): Promise<BoardRelationship> {
@@ -60,7 +60,7 @@ export const boardRelationshipsAPI = {
       .single();
     
     if (error) throw error;
-    return data;
+    return data as BoardRelationship;
   },
 
   async delete(id: string): Promise<void> {
@@ -82,7 +82,7 @@ export const itemRelationshipsAPI = {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    return (data || []) as ItemRelationship[];
   },
 
   async getBySourceItem(sourceItemId: string): Promise<ItemRelationship[]> {
@@ -93,7 +93,7 @@ export const itemRelationshipsAPI = {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    return (data || []) as ItemRelationship[];
   },
 
   async getByTargetItem(targetItemId: string): Promise<ItemRelationship[]> {
@@ -104,7 +104,7 @@ export const itemRelationshipsAPI = {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    return (data || []) as ItemRelationship[];
   },
 
   async create(relationship: Omit<ItemRelationship, 'id' | 'created_at'>): Promise<ItemRelationship> {
@@ -115,7 +115,7 @@ export const itemRelationshipsAPI = {
       .single();
     
     if (error) throw error;
-    return data;
+    return data as ItemRelationship;
   },
 
   async delete(id: string): Promise<void> {
