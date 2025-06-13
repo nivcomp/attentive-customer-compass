@@ -21,6 +21,7 @@ interface DynamicBoardContentProps {
   onSearchChange: (value: string) => void;
   onViewChange: (view: ViewType) => void;
   onCreateBoard: () => void;
+  onRefresh?: () => void;
 }
 
 const DynamicBoardContent = ({ 
@@ -33,7 +34,8 @@ const DynamicBoardContent = ({
   currentView, 
   onSearchChange, 
   onViewChange,
-  onCreateBoard 
+  onCreateBoard,
+  onRefresh
 }: DynamicBoardContentProps) => {
   if (!selectedBoard) {
     return (
@@ -99,6 +101,8 @@ const DynamicBoardContent = ({
             onEditItem={(item) => console.log('Edit item:', item)}
             onDeleteItem={(item) => console.log('Delete item:', item)}
             onAddItem={() => console.log('Add item')}
+            boardId={selectedBoard.id}
+            onRefresh={onRefresh}
           />
         )}
         

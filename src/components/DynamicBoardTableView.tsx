@@ -6,6 +6,7 @@ import { DynamicBoardColumn, DynamicBoardItem } from "@/api/dynamicBoard";
 import TableHeader from "./TableHeader";
 import TableRowComponent from "./TableRowComponent";
 import EmptyStates from "./EmptyStates";
+import AddRecordModal from "./AddRecordModal";
 
 interface DynamicBoardTableViewProps {
   items: DynamicBoardItem[];
@@ -14,6 +15,8 @@ interface DynamicBoardTableViewProps {
   onEditItem: (item: DynamicBoardItem) => void;
   onDeleteItem: (item: DynamicBoardItem) => void;
   onAddItem: () => void;
+  boardId?: string;
+  onRefresh?: () => void;
 }
 
 const DynamicBoardTableView: React.FC<DynamicBoardTableViewProps> = ({ 
@@ -22,9 +25,12 @@ const DynamicBoardTableView: React.FC<DynamicBoardTableViewProps> = ({
   loading, 
   onEditItem, 
   onDeleteItem, 
-  onAddItem 
+  onAddItem,
+  boardId,
+  onRefresh
 }) => {
   const [editingItem, setEditingItem] = useState<DynamicBoardItem | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const handleFieldChange = (item: DynamicBoardItem, columnName: string, value: any) => {
     if (item === editingItem) {
@@ -39,6 +45,16 @@ const DynamicBoardTableView: React.FC<DynamicBoardTableViewProps> = ({
     if (editingItem) {
       onEditItem(editingItem);
       setEditingItem(null);
+    }
+  };
+
+  const handleAddRecordClick = () => {
+    setShowAddModal(true);
+  };
+
+  const handleRecordAdded = () => {
+    if (onRefresh) {
+      onRefresh();
     }
   };
 
@@ -77,7 +93,18 @@ const DynamicBoardTableView: React.FC<DynamicBoardTableViewProps> = ({
 
       {/* הודעה כשאין נתונים */}
       {columns.length > 0 && items.length === 0 && (
-        <EmptyStates type="no-items" onAddItem={onAddItem} />
+        <EmptyStates type="no-items" onAddItem={handleAddRecordClick} />
+      )}
+
+      {/* מודל הוספת רשומה */}
+      {boardId && (
+        <AddRecordModal
+          isOpen={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          boardId={boardId}
+          columns={columns}
+          onRecordAdded={handleRecordAdded}
+        />
       )}
     </div>
   );

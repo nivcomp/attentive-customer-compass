@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { useDynamicBoards } from "@/hooks/useDynamicBoards";
@@ -22,7 +21,7 @@ const DynamicBoardBuilder = () => {
   const [searchQuery, setSearchQuery] = useState('');
   
   const { columns, loading: columnsLoading } = useDynamicBoardColumns(selectedBoard?.id || null);
-  const { items, loading: itemsLoading } = useDynamicBoardItems(selectedBoard?.id || null);
+  const { items, loading: itemsLoading, refetch } = useDynamicBoardItems(selectedBoard?.id || null);
 
   // סנכרון חיפוש עם הגדרות
   useEffect(() => {
@@ -96,6 +95,7 @@ const DynamicBoardBuilder = () => {
         onSearchChange={handleSearchChange}
         onViewChange={handleViewChange}
         onCreateBoard={handleCreateBoard}
+        onRefresh={refetch}
       />
 
       {/* RelationshipManager Modal */}
