@@ -50,40 +50,40 @@ const UserInviteForm = ({ organizationId }: UserInviteFormProps) => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="inviteEmail" className="text-sm font-medium">
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="space-y-3">
+          <Label htmlFor="inviteEmail" className="text-base font-semibold text-gray-700">
             כתובת אימייל
           </Label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <Input
               id="inviteEmail"
               type="email"
               placeholder="user@company.com"
               value={newMemberEmail}
               onChange={(e) => setNewMemberEmail(e.target.value)}
-              className="pl-10 h-10"
+              className="pl-12 h-12 text-base border-2 focus:border-blue-500"
             />
           </div>
         </div>
         
-        <div className="space-y-2">
-          <Label className="text-sm font-medium">תפקיד</Label>
+        <div className="space-y-3">
+          <Label className="text-base font-semibold text-gray-700">תפקיד</Label>
           <Select value={newMemberRole} onValueChange={setNewMemberRole}>
-            <SelectTrigger className="h-10">
+            <SelectTrigger className="h-12 text-base border-2 focus:border-blue-500">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="member">
-                <div className="flex items-center gap-2">
+            <SelectContent className="bg-white border-2 shadow-lg">
+              <SelectItem value="member" className="text-base py-3">
+                <div className="flex items-center gap-3">
                   <UserCheck className="h-4 w-4" />
                   חבר
                 </div>
               </SelectItem>
-              <SelectItem value="admin">
-                <div className="flex items-center gap-2">
+              <SelectItem value="admin" className="text-base py-3">
+                <div className="flex items-center gap-3">
                   <UserCheck className="h-4 w-4" />
                   מנהל
                 </div>
@@ -92,14 +92,14 @@ const UserInviteForm = ({ organizationId }: UserInviteFormProps) => {
           </Select>
         </div>
         
-        <div className="space-y-2 sm:col-span-2 lg:col-span-1">
-          <Label className="text-sm font-medium opacity-0">פעולה</Label>
+        <div className="space-y-3">
+          <Label className="text-base font-semibold text-gray-700">פעולה</Label>
           <Button 
             onClick={handleInviteUser} 
             disabled={isInviting || !newMemberEmail.trim()}
-            className="w-full h-10 bg-blue-600 hover:bg-blue-700"
+            className="w-full h-12 text-base bg-blue-600 hover:bg-blue-700 font-semibold"
           >
-            {isInviting ? 'מזמין...' : 'שלח הזמנה'}
+            {isInviting ? 'שולח הזמנה...' : 'שלח הזמנה'}
           </Button>
         </div>
       </div>
