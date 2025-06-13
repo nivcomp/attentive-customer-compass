@@ -11,10 +11,12 @@ import DynamicBoardHeader from "./DynamicBoardHeader";
 import DynamicBoardsList from "./DynamicBoardsList";
 import DynamicBoardContent from "./DynamicBoardContent";
 import DynamicBoardLoadingSkeleton from "./DynamicBoardLoadingSkeleton";
+import RelationshipManager from "./RelationshipManager";
 
 const DynamicBoardBuilder = () => {
   const { boards, loading: boardsLoading, createBoard } = useDynamicBoards();
   const [selectedBoard, setSelectedBoard] = useState<DynamicBoard | null>(null);
+  const [showRelationshipManager, setShowRelationshipManager] = useState(false);
   
   const { settings, saveSettings } = useBoardSettings(selectedBoard?.id || null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -71,7 +73,10 @@ const DynamicBoardBuilder = () => {
   return (
     <div className="space-y-6">
       <Card className="shadow-sm border-gray-200">
-        <DynamicBoardHeader onCreateBoard={handleCreateBoard} />
+        <DynamicBoardHeader 
+          onCreateBoard={handleCreateBoard}
+          onManageRelationships={() => setShowRelationshipManager(true)}
+        />
         <DynamicBoardsList
           boards={boards}
           selectedBoard={selectedBoard}
@@ -91,6 +96,12 @@ const DynamicBoardBuilder = () => {
         onSearchChange={handleSearchChange}
         onViewChange={handleViewChange}
         onCreateBoard={handleCreateBoard}
+      />
+
+      {/* RelationshipManager Modal */}
+      <RelationshipManager
+        isOpen={showRelationshipManager}
+        onClose={() => setShowRelationshipManager(false)}
       />
     </div>
   );

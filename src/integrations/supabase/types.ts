@@ -191,6 +191,51 @@ export type Database = {
           },
         ]
       }
+      board_relationships: {
+        Row: {
+          created_at: string | null
+          id: string
+          relationship_type: string
+          source_board_id: string | null
+          source_field_name: string
+          target_board_id: string | null
+          target_field_name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          relationship_type: string
+          source_board_id?: string | null
+          source_field_name: string
+          target_board_id?: string | null
+          target_field_name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          relationship_type?: string
+          source_board_id?: string | null
+          source_field_name?: string
+          target_board_id?: string | null
+          target_field_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_relationships_source_board_id_fkey"
+            columns: ["source_board_id"]
+            isOneToOne: false
+            referencedRelation: "dynamic_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "board_relationships_target_board_id_fkey"
+            columns: ["target_board_id"]
+            isOneToOne: false
+            referencedRelation: "dynamic_boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       board_views: {
         Row: {
           board_id: string | null
@@ -572,6 +617,52 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      item_relationships: {
+        Row: {
+          created_at: string | null
+          id: string
+          relationship_id: string | null
+          source_item_id: string | null
+          target_item_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          relationship_id?: string | null
+          source_item_id?: string | null
+          target_item_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          relationship_id?: string | null
+          source_item_id?: string | null
+          target_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_relationships_relationship_id_fkey"
+            columns: ["relationship_id"]
+            isOneToOne: false
+            referencedRelation: "board_relationships"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_relationships_source_item_id_fkey"
+            columns: ["source_item_id"]
+            isOneToOne: false
+            referencedRelation: "dynamic_board_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_relationships_target_item_id_fkey"
+            columns: ["target_item_id"]
+            isOneToOne: false
+            referencedRelation: "dynamic_board_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
