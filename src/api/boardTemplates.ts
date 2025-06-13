@@ -81,23 +81,20 @@ export const boardTemplatesAPI = {
   },
 
   async incrementUsage(id: string): Promise<void> {
-    const { error } = await supabase
-      .rpc('increment_template_usage', { template_id: id });
+    // Direct update approach since RPC function may not exist
+    const { data: template } = await supabase
+      .from('board_templates')
+      .select('usage_count')
+      .eq('id', id)
+      .single();
     
-    if (error) {
-      // Fallback if function doesn't exist
-      const { data: template } = await supabase
+    if (template) {
+      const { error } = await supabase
         .from('board_templates')
-        .select('usage_count')
-        .eq('id', id)
-        .single();
+        .update({ usage_count: template.usage_count + 1 })
+        .eq('id', id);
       
-      if (template) {
-        await supabase
-          .from('board_templates')
-          .update({ usage_count: template.usage_count + 1 })
-          .eq('id', id);
-      }
+      if (error) throw error;
     }
   }
 };
