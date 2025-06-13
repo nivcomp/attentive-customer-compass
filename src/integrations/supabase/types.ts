@@ -473,6 +473,106 @@ export type Database = {
           },
         ]
       }
+      dynamic_board_columns: {
+        Row: {
+          board_id: string | null
+          column_order: number
+          column_type: string
+          created_at: string | null
+          id: string
+          is_required: boolean | null
+          name: string
+          options: Json | null
+        }
+        Insert: {
+          board_id?: string | null
+          column_order?: number
+          column_type?: string
+          created_at?: string | null
+          id?: string
+          is_required?: boolean | null
+          name: string
+          options?: Json | null
+        }
+        Update: {
+          board_id?: string | null
+          column_order?: number
+          column_type?: string
+          created_at?: string | null
+          id?: string
+          is_required?: boolean | null
+          name?: string
+          options?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dynamic_board_columns_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "dynamic_boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dynamic_board_items: {
+        Row: {
+          board_id: string | null
+          created_at: string | null
+          data: Json
+          id: string
+          item_order: number
+          updated_at: string | null
+        }
+        Insert: {
+          board_id?: string | null
+          created_at?: string | null
+          data?: Json
+          id?: string
+          item_order?: number
+          updated_at?: string | null
+        }
+        Update: {
+          board_id?: string | null
+          created_at?: string | null
+          data?: Json
+          id?: string
+          item_order?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dynamic_board_items_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "dynamic_boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dynamic_boards: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
