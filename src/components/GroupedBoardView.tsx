@@ -24,6 +24,11 @@ const GroupedBoardView: React.FC<GroupedBoardViewProps> = ({
   const { boardsData } = useMultipleBoardsData(group.boardIds);
 
   const getShortTablePreview = (columns: DynamicBoardColumn[], items: DynamicBoardItem[], limit = 5) => {
+    // Safety check for columns and items
+    if (!columns || !Array.isArray(columns) || !items || !Array.isArray(items)) {
+      return null;
+    }
+
     const limitedItems = items.slice(0, limit);
     const visibleColumns = columns.slice(0, 4); // מציג מקסימום 4 עמודות
 
@@ -120,15 +125,15 @@ const GroupedBoardView: React.FC<GroupedBoardViewProps> = ({
               <CardContent>
                 {data?.loading ? (
                   <EmptyStates type="loading" />
-                ) : data?.columns?.length === 0 ? (
+                ) : !data?.columns || data.columns.length === 0 ? (
                   <EmptyStates type="no-columns" />
-                ) : data?.items?.length === 0 ? (
+                ) : !data?.items || data.items.length === 0 ? (
                   <EmptyStates type="no-items" />
                 ) : (
                   <div className="space-y-4">
                     {getShortTablePreview(data.columns, data.items)}
                     
-                    {data.items.length > 5 && (
+                    {data.items && data.items.length > 5 && (
                       <div className="text-center pt-2">
                         <p className="text-sm text-gray-500">
                           מציג 5 מתוך {data.items.length} פריטים

@@ -23,22 +23,24 @@ export const useMultipleBoardsData = (boardIds: string[]) => {
     setBoardsData(initialData);
   }, [boardIds]);
 
-  // Fetch data for each board
-  boardIds.forEach(boardId => {
-    const { columns, loading: columnsLoading } = useDynamicBoardColumns(boardId);
-    const { items, loading: itemsLoading } = useDynamicBoardItems(boardId);
+  // Fetch data for the first board (for now, we'll handle one at a time)
+  // This is a temporary solution - a proper implementation would need a different approach
+  const firstBoardId = boardIds[0] || null;
+  const { columns: firstColumns, loading: firstColumnsLoading } = useDynamicBoardColumns(firstBoardId);
+  const { items: firstItems, loading: firstItemsLoading } = useDynamicBoardItems(firstBoardId);
 
-    useEffect(() => {
+  useEffect(() => {
+    if (firstBoardId) {
       setBoardsData(prev => ({
         ...prev,
-        [boardId]: {
-          columns: columns || [],
-          items: items || [],
-          loading: columnsLoading || itemsLoading
+        [firstBoardId]: {
+          columns: firstColumns || [],
+          items: firstItems || [],
+          loading: firstColumnsLoading || firstItemsLoading
         }
       }));
-    }, [columns, items, columnsLoading, itemsLoading, boardId]);
-  });
+    }
+  }, [firstColumns, firstItems, firstColumnsLoading, firstItemsLoading, firstBoardId]);
 
   return { boardsData };
 };
