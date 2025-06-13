@@ -837,6 +837,47 @@ export type Database = {
           },
         ]
       }
+      organization_audit_log: {
+        Row: {
+          action_type: string
+          details: Json | null
+          id: string
+          organization_id: string
+          performed_at: string | null
+          target_id: string | null
+          target_type: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          details?: Json | null
+          id?: string
+          organization_id: string
+          performed_at?: string | null
+          target_id?: string | null
+          target_type?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          details?: Json | null
+          id?: string
+          organization_id?: string
+          performed_at?: string | null
+          target_id?: string | null
+          target_type?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_audit_log_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_users: {
         Row: {
           id: string
@@ -874,23 +915,50 @@ export type Database = {
       }
       organizations: {
         Row: {
+          allowed_email_domains: string[] | null
+          board_creation_policy: string | null
           created_at: string | null
+          default_board_permission: string | null
           id: string
+          logo_url: string | null
           name: string
+          primary_color: string | null
+          require_board_approval: boolean | null
+          restrict_invitations_to_admins: boolean | null
+          secondary_color: string | null
+          session_timeout_hours: number | null
           settings: Json | null
           subdomain: string
         }
         Insert: {
+          allowed_email_domains?: string[] | null
+          board_creation_policy?: string | null
           created_at?: string | null
+          default_board_permission?: string | null
           id?: string
+          logo_url?: string | null
           name: string
+          primary_color?: string | null
+          require_board_approval?: boolean | null
+          restrict_invitations_to_admins?: boolean | null
+          secondary_color?: string | null
+          session_timeout_hours?: number | null
           settings?: Json | null
           subdomain: string
         }
         Update: {
+          allowed_email_domains?: string[] | null
+          board_creation_policy?: string | null
           created_at?: string | null
+          default_board_permission?: string | null
           id?: string
+          logo_url?: string | null
           name?: string
+          primary_color?: string | null
+          require_board_approval?: boolean | null
+          restrict_invitations_to_admins?: boolean | null
+          secondary_color?: string | null
+          session_timeout_hours?: number | null
           settings?: Json | null
           subdomain?: string
         }
@@ -928,12 +996,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_audit_log: {
+        Args: {
+          org_id: string
+          action_type: string
+          target_id?: string
+          target_type?: string
+          details?: Json
+        }
+        Returns: string
+      }
       check_board_permission: {
         Args: {
           board_uuid: string
           user_uuid: string
           required_permission: string
         }
+        Returns: boolean
+      }
+      check_organization_permission: {
+        Args: { org_id: string; user_id: string; required_role: string }
         Returns: boolean
       }
       create_organization: {

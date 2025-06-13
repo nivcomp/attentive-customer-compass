@@ -1,5 +1,5 @@
 
-import { Home, Users, Activity, DollarSign, UserPlus, Settings, Building2, Database, Layout, LayoutDashboard, Building } from "lucide-react";
+import { Home, Users, Activity, DollarSign, UserPlus, Settings, Building2, Database, Layout, LayoutDashboard, Building, Cog } from "lucide-react";
 
 export const navItems = [
   {
@@ -11,6 +11,11 @@ export const navItems = [
     title: "Dashboard ארגוני",
     to: "/org-dashboard",
     icon: <Building className="h-4 w-4" />,
+  },
+  {
+    title: "הגדרות ארגון",
+    to: "/org-settings",
+    icon: <Cog className="h-4 w-4" />,
   },
   {
     title: "אנשי קשר",
