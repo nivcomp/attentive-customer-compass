@@ -4,13 +4,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { BoardType } from '@/api/boardTypes';
 
+// Updated interface to match the API interface requirements
 export interface DynamicBoard {
   id: string;
   name: string;
   description?: string;
   board_type?: string;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string; // Made required to match API interface
+  updated_at: string; // Made required to match API interface
 }
 
 export const useDynamicBoards = () => {
@@ -30,7 +31,18 @@ export const useDynamicBoards = () => {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      setBoards(data || []);
+      
+      // Transform data to ensure required fields are present
+      const transformedData: DynamicBoard[] = (data || []).map(board => ({
+        id: board.id,
+        name: board.name,
+        description: board.description,
+        board_type: board.board_type,
+        created_at: board.created_at || new Date().toISOString(),
+        updated_at: board.updated_at || new Date().toISOString()
+      }));
+      
+      setBoards(transformedData);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'שגיאה בטעינת הבורדים';
       setError(errorMessage);
@@ -63,12 +75,22 @@ export const useDynamicBoards = () => {
       
       if (error) throw error;
       
-      setBoards(prev => [data, ...prev]);
+      // Transform the returned data to match our interface
+      const transformedBoard: DynamicBoard = {
+        id: data.id,
+        name: data.name,
+        description: data.description,
+        board_type: data.board_type,
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || new Date().toISOString()
+      };
+      
+      setBoards(prev => [transformedBoard, ...prev]);
       toast({
         title: "הצלחה",
         description: "הבורד נוצר בהצלחה",
       });
-      return data;
+      return transformedBoard;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'שגיאה ביצירת הבורד';
       console.error('Error creating board:', err);
@@ -92,12 +114,22 @@ export const useDynamicBoards = () => {
       
       if (error) throw error;
       
-      setBoards(prev => prev.map(board => board.id === id ? data : board));
+      // Transform the returned data to match our interface
+      const transformedBoard: DynamicBoard = {
+        id: data.id,
+        name: data.name,
+        description: data.description,
+        board_type: data.board_type,
+        created_at: data.created_at || new Date().toISOString(),
+        updated_at: data.updated_at || new Date().toISOString()
+      };
+      
+      setBoards(prev => prev.map(board => board.id === id ? transformedBoard : board));
       toast({
         title: "הצלחה",
         description: "הבורד עודכן בהצלחה",
       });
-      return data;
+      return transformedBoard;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'שגיאה בעדכון הבורד';
       console.error('Error updating board:', err);

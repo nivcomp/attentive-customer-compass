@@ -15,13 +15,13 @@ export interface BoardTemplate {
   updated_at: string;
 }
 
-// Updated SystemTemplate interface to match database schema
+// Updated SystemTemplate interface to match database schema and usage patterns
 export interface SystemTemplate {
   id: string;
   name: string;
   category: string;
   description?: string;
-  template_data: any[];
+  template_data: any[]; // Keep as any[] for components that expect array
   is_public: boolean;
   created_at: string;
 }
@@ -45,7 +45,17 @@ export const boardTemplatesAPI = {
       .order('category');
     
     if (error) throw error;
-    return data || [];
+    
+    // Transform the data to ensure template_data is always an array
+    return (data || []).map(item => ({
+      id: item.id,
+      name: item.name,
+      category: item.category,
+      description: item.description,
+      template_data: Array.isArray(item.template_data) ? item.template_data : [],
+      is_public: item.is_public,
+      created_at: item.created_at
+    }));
   },
 
   async getByCategory(category: string): Promise<BoardTemplate[]> {
@@ -67,7 +77,17 @@ export const boardTemplatesAPI = {
       .order('usage_count', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    
+    // Transform the data to ensure template_data is always an array
+    return (data || []).map(item => ({
+      id: item.id,
+      name: item.name,
+      category: item.category,
+      description: item.description,
+      template_data: Array.isArray(item.template_data) ? item.template_data : [],
+      is_public: item.is_public,
+      created_at: item.created_at
+    }));
   },
 
   async getById(id: string): Promise<BoardTemplate | null> {

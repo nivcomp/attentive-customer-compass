@@ -22,13 +22,14 @@ export const useBoardTypes = () => {
         .order('category');
       
       if (error) throw error;
-      // Transform the data to match SystemTemplate interface
+      
+      // Transform the data to match SystemTemplate interface with proper array handling
       const transformedData: SystemTemplate[] = (data || []).map(item => ({
         id: item.id,
         name: item.name,
         category: item.category,
         description: item.description,
-        template_data: item.template_data,
+        template_data: Array.isArray(item.template_data) ? item.template_data : [],
         is_public: item.is_public,
         created_at: item.created_at
       }));
