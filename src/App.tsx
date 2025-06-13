@@ -17,6 +17,7 @@ import BoardManagement from "./pages/BoardManagement";
 import DynamicBoards from "./pages/DynamicBoards";
 import OrgDashboard from "./pages/OrgDashboard";
 import OrgSettings from "./pages/OrgSettings";
+import Automations from "./pages/Automations";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
               <Route path="/activities" element={<Activities />} />
               <Route path="/deals" element={<Deals />} />
               <Route path="/leads" element={<Leads />} />
+              <Route path="/automations" element={<Automations />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/organizations" element={<Organizations />} />
               <Route path="/tenants" element={<Tenants />} />

@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Users, Activity, DollarSign, Settings, BarChart3, Workflow, Layers, Phone, Plus, FolderOpen } from 'lucide-react';
+import { Home, Users, Activity, DollarSign, Settings, BarChart3, Workflow, FolderOpen, Plus, Phone } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import BoardCreator from "./BoardCreator";
 
@@ -15,7 +15,6 @@ const Navigation = () => {
     { to: '/deals', icon: DollarSign, label: 'עסקאות', showNewBoard: true },
     { to: '/dynamic-boards', icon: BarChart3, label: 'בורדים דינמיים' },
     { to: '/board-management', icon: FolderOpen, label: 'ניהול בורדים' },
-    { to: '/board-builder', icon: Layers, label: 'בונה לוחות' },
     { to: '/automations', icon: Workflow, label: 'אוטומציות' },
     { to: '/settings', icon: Settings, label: 'הגדרות' },
   ];
