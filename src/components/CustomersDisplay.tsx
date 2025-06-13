@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCustomers } from "@/hooks/useCustomers";
-import { Users, Mail, Phone, Plus, RefreshCw } from "lucide-react";
+import { Users, Mail, Phone, RefreshCw } from "lucide-react";
+import AddCustomerDialog from "./AddCustomerDialog";
 
 const CustomersDisplay = () => {
   const { customers, loading, error, refetch } = useCustomers();
@@ -69,10 +70,7 @@ const CustomersDisplay = () => {
             <Button onClick={refetch} variant="outline" size="sm">
               <RefreshCw className="h-4 w-4" />
             </Button>
-            <Button size="sm">
-              <Plus className="h-4 w-4 ml-2" />
-              הוסף לקוח
-            </Button>
+            <AddCustomerDialog />
           </div>
         </div>
       </CardHeader>
@@ -81,10 +79,15 @@ const CustomersDisplay = () => {
           <div className="text-center py-8">
             <Users className="h-12 w-12 mx-auto text-gray-400 mb-4" />
             <p className="text-gray-600">אין לקוחות במערכת</p>
-            <Button className="mt-4">
-              <Plus className="h-4 w-4 ml-2" />
-              הוסף את הלקוח הראשון
-            </Button>
+            <div className="mt-4">
+              <AddCustomerDialog 
+                trigger={
+                  <Button>
+                    הוסף את הלקוח הראשון
+                  </Button>
+                }
+              />
+            </div>
           </div>
         ) : (
           <div className="space-y-4">
