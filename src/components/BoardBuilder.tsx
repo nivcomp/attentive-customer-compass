@@ -34,7 +34,8 @@ const BoardBuilder = () => {
       const board = await createBoard({ 
         name: newBoardName, 
         description: newBoardDescription,
-        visibility: 'private'
+        visibility: 'private',
+        board_config: {}
       });
       if (board) {
         setNewBoardName('');

@@ -33,7 +33,8 @@ export const boardsAPI = {
     if (error) throw error;
     return (data || []).map(board => ({
       ...board,
-      visibility: board.visibility as 'private' | 'organization' | 'custom'
+      visibility: board.visibility as 'private' | 'organization' | 'custom',
+      board_config: (board.board_config as Record<string, any>) || {}
     }));
   },
 
@@ -47,7 +48,8 @@ export const boardsAPI = {
     if (error) throw error;
     return data ? {
       ...data,
-      visibility: data.visibility as 'private' | 'organization' | 'custom'
+      visibility: data.visibility as 'private' | 'organization' | 'custom',
+      board_config: (data.board_config as Record<string, any>) || {}
     } : null;
   },
 
@@ -67,7 +69,8 @@ export const boardsAPI = {
     if (error) throw error;
     return {
       ...data,
-      visibility: data.visibility as 'private' | 'organization' | 'custom'
+      visibility: data.visibility as 'private' | 'organization' | 'custom',
+      board_config: (data.board_config as Record<string, any>) || {}
     };
   },
 
@@ -82,7 +85,8 @@ export const boardsAPI = {
     if (error) throw error;
     return {
       ...data,
-      visibility: data.visibility as 'private' | 'organization' | 'custom'
+      visibility: data.visibility as 'private' | 'organization' | 'custom',
+      board_config: (data.board_config as Record<string, any>) || {}
     };
   },
 
