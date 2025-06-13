@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,9 +34,6 @@ const DynamicBoardBuilder = () => {
   
   const { columns, loading: columnsLoading } = useDynamicBoardColumns(selectedBoard?.id || null);
   const { items, loading: itemsLoading, refetch } = useDynamicBoardItems(selectedBoard?.id || null);
-
-  // טעינת נתונים לכל הבורדים בקבוצה הנבחרת
-  const [groupBoardsData, setGroupBoardsData] = useState<Record<string, any>>({});
 
   // סנכרון חיפוש עם הגדרות
   useEffect(() => {
@@ -153,7 +151,6 @@ const DynamicBoardBuilder = () => {
         <GroupedBoardView
           group={selectedGroup}
           boards={boards}
-          boardsData={groupBoardsData}
           onShowAllBoard={handleShowAllBoard}
         />
       </div>

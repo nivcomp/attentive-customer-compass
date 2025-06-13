@@ -7,25 +7,22 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Eye, MoreHorizontal } from "lucide-react";
 import { DynamicBoard, DynamicBoardColumn, DynamicBoardItem } from "@/api/dynamicBoard";
 import { BoardGroup } from "@/types/boardGroups";
+import { useMultipleBoardsData } from "@/hooks/useMultipleBoardsData";
 import EmptyStates from "./EmptyStates";
 
 interface GroupedBoardViewProps {
   group: BoardGroup;
   boards: DynamicBoard[];
-  boardsData: Record<string, {
-    columns: DynamicBoardColumn[];
-    items: DynamicBoardItem[];
-    loading: boolean;
-  }>;
   onShowAllBoard: (boardId: string) => void;
 }
 
 const GroupedBoardView: React.FC<GroupedBoardViewProps> = ({
   group,
   boards,
-  boardsData,
   onShowAllBoard
 }) => {
+  const { boardsData } = useMultipleBoardsData(group.boardIds);
+
   const getShortTablePreview = (columns: DynamicBoardColumn[], items: DynamicBoardItem[], limit = 5) => {
     const limitedItems = items.slice(0, limit);
     const visibleColumns = columns.slice(0, 4); // מציג מקסימום 4 עמודות
