@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,18 +8,43 @@ import { Plus, Settings, Search, Filter } from "lucide-react";
 import { useDynamicBoards } from "@/hooks/useDynamicBoards";
 import { useDynamicBoardColumns } from "@/hooks/useDynamicBoardColumns";
 import { useDynamicBoardItems } from "@/hooks/useDynamicBoardItems";
+import { useBoardSettings } from "@/hooks/useBoardSettings";
 import ViewSelector, { ViewType } from "./ViewSelector";
 import DynamicBoardCardsView from "./DynamicBoardCardsView";
+import SettingsManager from "./SettingsManager";
 import { DynamicBoard } from "@/api/dynamicBoard";
 
 const DynamicBoardBuilder = () => {
   const { boards, loading: boardsLoading, createBoard } = useDynamicBoards();
   const [selectedBoard, setSelectedBoard] = useState<DynamicBoard | null>(null);
-  const [currentView, setCurrentView] = useState<ViewType>('table');
+  
+  const { settings, saveSettings } = useBoardSettings(selectedBoard?.id || null);
   const [searchQuery, setSearchQuery] = useState('');
   
   const { columns, loading: columnsLoading } = useDynamicBoardColumns(selectedBoard?.id || null);
   const { items, loading: itemsLoading } = useDynamicBoardItems(selectedBoard?.id || null);
+
+  // סנכרון חיפוש עם הגדרות
+  useEffect(() => {
+    if (settings?.searchQuery !== undefined) {
+      setSearchQuery(settings.searchQuery);
+    }
+  }, [settings?.searchQuery]);
+
+  // שמירת שינויים בחיפוש
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    if (settings) {
+      saveSettings({ searchQuery: value });
+    }
+  };
+
+  // שמירת שינויים בתצוגה
+  const handleViewChange = (view: ViewType) => {
+    if (settings) {
+      saveSettings({ selectedView: view });
+    }
+  };
 
   // פילטר פריטים לפי חיפוש
   const filteredItems = items.filter(item => {
@@ -70,7 +95,7 @@ const DynamicBoardBuilder = () => {
               <Input
                 placeholder="חפש בנתונים..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="pr-10"
               />
             </div>
@@ -80,22 +105,26 @@ const DynamicBoardBuilder = () => {
             </Button>
           </div>
           
-          <ViewSelector
-            currentView={currentView}
-            onViewChange={setCurrentView}
-            itemCount={filteredItems.length}
-          />
+          <div className="flex items-center gap-2">
+            <ViewSelector
+              currentView={settings?.selectedView || 'table'}
+              onViewChange={handleViewChange}
+              itemCount={filteredItems.length}
+            />
+            
+            <SettingsManager boardId={selectedBoard.id} />
+          </div>
         </div>
 
         {/* תוכן הבורד */}
         <div className="border rounded-lg p-4 bg-card">
-          {currentView === 'table' && (
+          {(settings?.selectedView || 'table') === 'table' && (
             <div className="text-center py-8 text-muted-foreground">
               תצוגת טבלה - יתווסף בהמשך
             </div>
           )}
           
-          {currentView === 'cards' && (
+          {(settings?.selectedView || 'table') === 'cards' && (
             <DynamicBoardCardsView
               items={filteredItems}
               columns={columns}
@@ -104,13 +133,13 @@ const DynamicBoardBuilder = () => {
             />
           )}
           
-          {currentView === 'kanban' && (
+          {(settings?.selectedView || 'table') === 'kanban' && (
             <div className="text-center py-8 text-muted-foreground">
               תצוגת קנבן - יתווסף בהמשך
             </div>
           )}
           
-          {currentView === 'list' && (
+          {(settings?.selectedView || 'table') === 'list' && (
             <div className="text-center py-8 text-muted-foreground">
               תצוגת רשימה - יתווסף בהמשך
             </div>
