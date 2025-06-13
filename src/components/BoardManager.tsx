@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +24,7 @@ const BoardManager = () => {
   const [selectedBoardForPermissions, setSelectedBoardForPermissions] = useState<string | null>(null);
   
   const { boards: dynamicBoards, loading: dynamicLoading } = useDynamicBoards();
-  const { data: regularBoards = [], isLoading: regularLoading } = useBoards();
+  const { boards: regularBoards, loading: regularLoading } = useBoards();
 
   // טעינת בורדים מותאמים מ-localStorage
   useEffect(() => {
