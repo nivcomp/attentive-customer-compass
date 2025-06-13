@@ -709,6 +709,7 @@ export type Database = {
       }
       dynamic_boards: {
         Row: {
+          board_type: string | null
           created_at: string | null
           description: string | null
           id: string
@@ -716,6 +717,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          board_type?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -723,6 +725,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          board_type?: string | null
           created_at?: string | null
           description?: string | null
           id?: string

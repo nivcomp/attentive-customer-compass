@@ -37,7 +37,7 @@ export const useDynamicBoards = () => {
         id: board.id,
         name: board.name,
         description: board.description,
-        board_type: board.board_type,
+        board_type: board.board_type || 'custom',
         created_at: board.created_at || new Date().toISOString(),
         updated_at: board.updated_at || new Date().toISOString()
       }));
@@ -80,7 +80,7 @@ export const useDynamicBoards = () => {
         id: data.id,
         name: data.name,
         description: data.description,
-        board_type: data.board_type,
+        board_type: data.board_type || 'custom',
         created_at: data.created_at || new Date().toISOString(),
         updated_at: data.updated_at || new Date().toISOString()
       };
@@ -119,7 +119,7 @@ export const useDynamicBoards = () => {
         id: data.id,
         name: data.name,
         description: data.description,
-        board_type: data.board_type,
+        board_type: data.board_type || 'custom',
         created_at: data.created_at || new Date().toISOString(),
         updated_at: data.updated_at || new Date().toISOString()
       };
