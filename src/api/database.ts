@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 
@@ -7,6 +6,8 @@ type Customer = Database['public']['Tables']['customers']['Row'];
 type Activity = Database['public']['Tables']['activities']['Row'];
 type Contact = Database['public']['Tables']['contacts']['Row'];
 type Deal = Database['public']['Tables']['deals']['Row'];
+type Automation = Database['public']['Tables']['automations']['Row'];
+type AutomationLog = Database['public']['Tables']['automation_logs']['Row'];
 
 // API functions for customers
 export const customersAPI = {
@@ -181,5 +182,114 @@ export const dealsAPI = {
   }
 };
 
+// API functions for automations
+export const automationsAPI = {
+  async getAll(): Promise<Automation[]> {
+    const { data, error } = await supabase
+      .from('automations')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getById(id: string): Promise<Automation | null> {
+    const { data, error } = await supabase
+      .from('automations')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async create(automation: Omit<Automation, 'id' | 'created_at' | 'updated_at'>): Promise<Automation> {
+    const { data, error } = await supabase
+      .from('automations')
+      .insert([automation])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async update(id: string, updates: Omit<Partial<Automation>, 'id' | 'created_at' | 'updated_at'>): Promise<Automation> {
+    const { data, error } = await supabase
+      .from('automations')
+      .update({ ...updates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async delete(id: string): Promise<void> {
+    const { error } = await supabase
+      .from('automations')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
+  },
+
+  async toggle(id: string, isActive: boolean): Promise<Automation> {
+    const { data, error } = await supabase
+      .from('automations')
+      .update({ is_active: isActive, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  }
+};
+
+// API functions for automation logs
+export const automationLogsAPI = {
+  async getByAutomationId(automationId: string): Promise<AutomationLog[]> {
+    const { data, error } = await supabase
+      .from('automation_logs')
+      .select('*')
+      .eq('automation_id', automationId)
+      .order('executed_at', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async create(log: Omit<AutomationLog, 'id' | 'executed_at'>): Promise<AutomationLog> {
+    const { data, error } = await supabase
+      .from('automation_logs')
+      .insert([log])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async getRecentLogs(limit: number = 50): Promise<AutomationLog[]> {
+    const { data, error } = await supabase
+      .from('automation_logs')
+      .select(`
+        *,
+        automations:automation_id (
+          name
+        )
+      `)
+      .order('executed_at', { ascending: false })
+      .limit(limit);
+    
+    if (error) throw error;
+    return data || [];
+  }
+};
+
 // Export types for use in components
-export type { Customer, Activity, Contact, Deal };
+export type { Customer, Activity, Contact, Deal, Automation, AutomationLog };

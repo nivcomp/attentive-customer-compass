@@ -41,6 +41,80 @@ export type Database = {
           },
         ]
       }
+      automation_logs: {
+        Row: {
+          automation_id: string
+          error_message: string | null
+          executed_at: string
+          id: string
+          status: string
+          triggered_by_id: string
+          triggered_by_type: string
+        }
+        Insert: {
+          automation_id: string
+          error_message?: string | null
+          executed_at?: string
+          id?: string
+          status: string
+          triggered_by_id: string
+          triggered_by_type: string
+        }
+        Update: {
+          automation_id?: string
+          error_message?: string | null
+          executed_at?: string
+          id?: string
+          status?: string
+          triggered_by_id?: string
+          triggered_by_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_logs_automation_id_fkey"
+            columns: ["automation_id"]
+            isOneToOne: false
+            referencedRelation: "automations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      automations: {
+        Row: {
+          action_config: Json
+          action_type: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          trigger_config: Json
+          trigger_type: string
+          updated_at: string
+        }
+        Insert: {
+          action_config?: Json
+          action_type: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          trigger_config?: Json
+          trigger_type: string
+          updated_at?: string
+        }
+        Update: {
+          action_config?: Json
+          action_type?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          trigger_config?: Json
+          trigger_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       board_columns: {
         Row: {
           board_id: string | null
