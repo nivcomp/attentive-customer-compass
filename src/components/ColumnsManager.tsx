@@ -20,7 +20,7 @@ interface ColumnsManagerProps {
   columnRequired: boolean;
   setColumnRequired: (required: boolean) => void;
   onCreateColumn: () => void;
-  onUpdateColumn: (id: string, updates: Partial<BoardColumn>) => void;
+  onUpdateColumn: (id: string, updates: Partial<BoardColumn>) => Promise<BoardColumn | null>;
   onDeleteColumn: (id: string) => void;
 }
 

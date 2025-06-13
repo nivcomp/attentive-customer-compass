@@ -1,10 +1,10 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Board } from "@/types/board";
+import { Board as APIBoard } from "@/api/boards";
 
 interface BoardsListProps {
-  boards: Board[];
+  boards: APIBoard[];
   selectedBoardId: string | null;
   onSelectBoard: (boardId: string) => void;
 }
