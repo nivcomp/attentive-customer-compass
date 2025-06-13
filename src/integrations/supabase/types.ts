@@ -779,12 +779,52 @@ export type Database = {
           },
         ]
       }
+      tenants: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          schema_name: string
+          subdomain: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          schema_name: string
+          subdomain: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          schema_name?: string
+          subdomain?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_tenant_schema: {
+        Args: { tenant_name: string; tenant_subdomain: string }
+        Returns: string
+      }
+      get_tenant_by_subdomain: {
+        Args: { tenant_subdomain: string }
+        Returns: {
+          id: string
+          name: string
+          schema_name: string
+          subdomain: string
+          is_active: boolean
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
