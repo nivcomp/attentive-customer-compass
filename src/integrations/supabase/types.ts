@@ -41,6 +41,147 @@ export type Database = {
           },
         ]
       }
+      board_columns: {
+        Row: {
+          board_id: string | null
+          column_order: number
+          column_type: string
+          created_at: string
+          id: string
+          is_required: boolean | null
+          name: string
+          options: Json | null
+        }
+        Insert: {
+          board_id?: string | null
+          column_order?: number
+          column_type?: string
+          created_at?: string
+          id?: string
+          is_required?: boolean | null
+          name: string
+          options?: Json | null
+        }
+        Update: {
+          board_id?: string | null
+          column_order?: number
+          column_type?: string
+          created_at?: string
+          id?: string
+          is_required?: boolean | null
+          name?: string
+          options?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_columns_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      board_items: {
+        Row: {
+          board_id: string | null
+          created_at: string
+          data: Json
+          id: string
+          item_order: number
+          updated_at: string
+        }
+        Insert: {
+          board_id?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          item_order?: number
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string | null
+          created_at?: string
+          data?: Json
+          id?: string
+          item_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_items_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      board_views: {
+        Row: {
+          board_id: string | null
+          created_at: string
+          id: string
+          is_default: boolean | null
+          name: string
+          settings: Json
+          view_type: string
+        }
+        Insert: {
+          board_id?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name: string
+          settings?: Json
+          view_type?: string
+        }
+        Update: {
+          board_id?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          settings?: Json
+          view_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_views_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      boards: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       contacts: {
         Row: {
           created_at: string | null

@@ -6,7 +6,8 @@ import {
   Target, 
   FileText, 
   Settings,
-  Bell
+  Bell,
+  Grid3X3
 } from "lucide-react";
 
 interface NavigationProps {
@@ -19,6 +20,7 @@ const Navigation = ({ activeView, onViewChange }: NavigationProps) => {
     { id: 'dashboard', label: 'לוח בקרה', icon: LayoutDashboard },
     { id: 'clients', label: 'לקוחות', icon: Users },
     { id: 'sales', label: 'מכירות', icon: Target },
+    { id: 'boards', label: 'לוחות מותאמים', icon: Grid3X3 },
     { id: 'reports', label: 'דוחות', icon: FileText },
     { id: 'settings', label: 'הגדרות', icon: Settings },
   ];

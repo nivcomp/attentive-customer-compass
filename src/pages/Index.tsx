@@ -23,6 +23,7 @@ import Navigation from "@/components/Navigation";
 import DashboardStats from "@/components/DashboardStats";
 import ClientsList from "@/components/ClientsList";
 import SalesOpportunities from "@/components/SalesOpportunities";
+import BoardBuilder from "@/components/BoardBuilder";
 
 const Index = () => {
   const [activeView, setActiveView] = useState('dashboard');
@@ -112,6 +113,8 @@ const Index = () => {
         return <ClientsList />;
       case 'sales':
         return <SalesOpportunities />;
+      case 'boards':
+        return <BoardBuilder />;
       default:
         return null;
     }
