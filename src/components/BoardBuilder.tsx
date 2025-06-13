@@ -12,6 +12,7 @@ import { Plus, Settings, Trash2, Edit, GripVertical } from "lucide-react";
 import { useBoards } from "@/hooks/useBoards";
 import { useBoardColumns } from "@/hooks/useBoardColumns";
 import { BoardColumn } from "@/types/board";
+import FieldEditor from "./FieldEditor";
 
 const BoardBuilder = () => {
   const { boards, loading: boardsLoading, createBoard } = useBoards();
@@ -22,7 +23,6 @@ const BoardBuilder = () => {
   const [newBoardDescription, setNewBoardDescription] = useState('');
   const [showCreateBoard, setShowCreateBoard] = useState(false);
   const [showCreateColumn, setShowCreateColumn] = useState(false);
-  const [editingColumn, setEditingColumn] = useState<BoardColumn | null>(null);
   
   const [columnName, setColumnName] = useState('');
   const [columnType, setColumnType] = useState<'text' | 'number' | 'date' | 'select' | 'status'>('text');
@@ -57,28 +57,6 @@ const BoardBuilder = () => {
       setColumnRequired(false);
       setShowCreateColumn(false);
     }
-  };
-
-  const handleEditColumn = async () => {
-    if (!editingColumn || !columnName.trim()) return;
-    
-    await updateColumn(editingColumn.id, {
-      name: columnName,
-      column_type: columnType,
-      is_required: columnRequired,
-    });
-    
-    setEditingColumn(null);
-    setColumnName('');
-    setColumnType('text');
-    setColumnRequired(false);
-  };
-
-  const openEditColumn = (column: BoardColumn) => {
-    setEditingColumn(column);
-    setColumnName(column.name);
-    setColumnType(column.column_type);
-    setColumnRequired(column.is_required);
   };
 
   const getColumnTypeLabel = (type: string) => {
@@ -267,13 +245,10 @@ const BoardBuilder = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => openEditColumn(column)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
+                      <FieldEditor
+                        column={column}
+                        onUpdateColumn={updateColumn}
+                      />
                       <Button
                         variant="ghost"
                         size="sm"
@@ -298,53 +273,6 @@ const BoardBuilder = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Edit Column Dialog */}
-      <Dialog open={!!editingColumn} onOpenChange={() => setEditingColumn(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>עריכת עמודה</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="edit-column-name">שם העמודה</Label>
-              <Input
-                id="edit-column-name"
-                value={columnName}
-                onChange={(e) => setColumnName(e.target.value)}
-                placeholder="הכנס שם לעמודה"
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-column-type">סוג העמודה</Label>
-              <Select value={columnType} onValueChange={(value: any) => setColumnType(value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="text">טקסט</SelectItem>
-                  <SelectItem value="number">מספר</SelectItem>
-                  <SelectItem value="date">תאריך</SelectItem>
-                  <SelectItem value="select">רשימה</SelectItem>
-                  <SelectItem value="status">סטטוס</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center space-x-2 rtl:space-x-reverse">
-              <input
-                type="checkbox"
-                id="edit-required"
-                checked={columnRequired}
-                onChange={(e) => setColumnRequired(e.target.checked)}
-              />
-              <Label htmlFor="edit-required">שדה חובה</Label>
-            </div>
-            <Button onClick={handleEditColumn} className="w-full">
-              שמור שינויים
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
