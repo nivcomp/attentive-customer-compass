@@ -1,89 +1,169 @@
 
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, LayoutGrid } from "lucide-react";
-import { DynamicBoard } from "@/api/dynamicBoard";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Search, MoreVertical, Eye, Edit, Trash2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useDynamicBoards } from "@/hooks/useDynamicBoards";
+import { BOARD_TYPES, BoardType } from "@/api/boardTypes";
+import BoardTypeSelector from "./BoardTypeSelector";
+import EmptyBoardsState from "./EmptyBoardsState";
 
-interface DynamicBoardsListProps {
-  boards: DynamicBoard[];
-  selectedBoard: DynamicBoard | null;
-  onSelectBoard: (board: DynamicBoard) => void;
-  onCreateBoard: () => void;
-}
+const DynamicBoardsList = () => {
+  const { boards, loading, deleteBoard } = useDynamicBoards();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterType, setFilterType] = useState<'all' | BoardType>('all');
+  const [showTypeSelector, setShowTypeSelector] = useState(false);
 
-const DynamicBoardsList = ({ 
-  boards, 
-  selectedBoard, 
-  onSelectBoard, 
-  onCreateBoard 
-}: DynamicBoardsListProps) => {
+  const filteredBoards = boards.filter(board => {
+    const matchesSearch = board.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         board.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesType = filterType === 'all' || board.board_type === filterType;
+    return matchesSearch && matchesType;
+  });
+
+  const getBoardTypeInfo = (boardType: string) => {
+    return BOARD_TYPES[boardType as BoardType] || { label: boardType, icon: '📋' };
+  };
+
+  const handleDeleteBoard = async (boardId: string, boardName: string) => {
+    if (confirm(`האם אתה בטוח שברצונך למחוק את הבורד "${boardName}"?`)) {
+      await deleteBoard(boardId);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   if (boards.length === 0) {
     return (
-      <CardContent className="pt-0">
-        <div className="text-center py-12">
-          <div className="max-w-sm mx-auto">
-            <div className="w-16 h-16 mx-auto mb-6 bg-gray-50 rounded-2xl flex items-center justify-center">
-              <LayoutGrid className="h-8 w-8 text-gray-400" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              אין בורדים במערכת
-            </h3>
-            <p className="text-gray-500 mb-6 text-sm">
-              צור את הבורד הראשון שלך כדי להתחיל לעבוד
-            </p>
-            <Button 
-              onClick={onCreateBoard}
-              className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all duration-200"
-            >
-              <Plus className="h-4 w-4 ml-2" />
-              צור בורד ראשון
-            </Button>
-          </div>
-        </div>
-      </CardContent>
+      <>
+        <EmptyBoardsState onCreateBoard={() => setShowTypeSelector(true)} />
+        <BoardTypeSelector 
+          isOpen={showTypeSelector}
+          onClose={() => setShowTypeSelector(false)}
+        />
+      </>
     );
   }
 
   return (
-    <CardContent className="pt-0">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {boards.map((board, index) => (
-          <Card 
-            key={board.id}
-            className={`cursor-pointer transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 animate-fade-in ${
-              selectedBoard?.id === board.id 
-                ? 'ring-2 ring-blue-500 shadow-md' 
-                : 'hover:border-gray-300'
-            }`}
-            style={{ animationDelay: `${index * 100}ms` }}
-            onClick={() => onSelectBoard(board)}
-          >
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium text-gray-900">
-                {board.name}
-              </CardTitle>
-              {board.description && (
-                <p className="text-sm text-gray-500 line-clamp-2">
-                  {board.description}
-                </p>
-              )}
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="flex items-center justify-between text-xs text-gray-500">
-                <span>נוצר: {new Date(board.created_at).toLocaleDateString('he-IL')}</span>
-                <Badge 
-                  variant={selectedBoard?.id === board.id ? "default" : "outline"}
-                  className="text-xs"
-                >
-                  {selectedBoard?.id === board.id ? 'נבחר' : 'לחץ לבחירה'}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <h2 className="text-2xl font-bold">הבורדים שלי</h2>
+        <Button onClick={() => setShowTypeSelector(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          בורד חדש
+        </Button>
       </div>
-    </CardContent>
+
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="חפש בורדים..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Select value={filterType} onValueChange={(value: any) => setFilterType(value)}>
+          <SelectTrigger className="w-48">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">כל הסוגים</SelectItem>
+            {Object.entries(BOARD_TYPES).map(([type, config]) => (
+              <SelectItem key={type} value={type}>
+                {config.icon} {config.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Boards Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredBoards.map((board) => {
+          const typeInfo = getBoardTypeInfo(board.board_type);
+          return (
+            <Card key={board.id} className="hover:shadow-md transition-shadow">
+              <CardHeader className="pb-3">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-lg line-clamp-1">{board.name}</CardTitle>
+                    {board.description && (
+                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+                        {board.description}
+                      </p>
+                    )}
+                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>
+                        <Eye className="h-4 w-4 mr-2" />
+                        צפה
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Edit className="h-4 w-4 mr-2" />
+                        ערוך
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => handleDeleteBoard(board.id, board.name)}
+                        className="text-red-600"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        מחק
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </CardHeader>
+              
+              <CardContent className="pt-0">
+                <div className="flex items-center justify-between">
+                  <Badge className="bg-gray-100 text-gray-800">
+                    <span className="mr-1">{typeInfo.icon}</span>
+                    {typeInfo.label}
+                  </Badge>
+                  <span className="text-xs text-gray-500">
+                    {new Date(board.created_at || '').toLocaleDateString('he-IL')}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {filteredBoards.length === 0 && boards.length > 0 && (
+        <div className="text-center py-12">
+          <div className="text-gray-500">
+            <Search className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>לא נמצאו בורדים המתאימים לחיפוש</p>
+          </div>
+        </div>
+      )}
+
+      <BoardTypeSelector 
+        isOpen={showTypeSelector}
+        onClose={() => setShowTypeSelector(false)}
+      />
+    </div>
   );
 };
 

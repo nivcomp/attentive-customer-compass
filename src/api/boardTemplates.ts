@@ -15,6 +15,17 @@ export interface BoardTemplate {
   updated_at: string;
 }
 
+// Legacy interface for compatibility
+export interface SystemTemplate {
+  id: string;
+  name: string;
+  board_type: string;
+  description?: string;
+  template_columns: any[];
+  is_system_template: boolean;
+  created_at: string;
+}
+
 export const boardTemplatesAPI = {
   async getAll(): Promise<BoardTemplate[]> {
     const { data, error } = await supabase
@@ -26,11 +37,33 @@ export const boardTemplatesAPI = {
     return data || [];
   },
 
-  async getByCategory(category: string): Promise<BoardTemplate[]> {
+  async getSystemTemplates(): Promise<SystemTemplate[]> {
     const { data, error } = await supabase
       .from('board_templates')
       .select('*')
+      .eq('is_system_template', true)
+      .order('board_type');
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getByCategory(category: string): Promise<BoardTemplate[]> {
+    const { data,error } = await supabase
+      .from('board_templates')
+      .select('*')
       .eq('category', category)
+      .order('usage_count', { ascending: false });
+    
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getByBoardType(boardType: string): Promise<SystemTemplate[]> {
+    const { data, error } = await supabase
+      .from('board_templates')
+      .select('*')
+      .eq('board_type', boardType)
       .order('usage_count', { ascending: false });
     
     if (error) throw error;

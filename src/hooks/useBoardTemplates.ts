@@ -1,10 +1,11 @@
 
 import { useState, useEffect } from 'react';
-import { boardTemplatesAPI, type BoardTemplate } from '@/api/boardTemplates';
+import { boardTemplatesAPI, type BoardTemplate, type SystemTemplate } from '@/api/boardTemplates';
 import { useToast } from '@/hooks/use-toast';
 
 export const useBoardTemplates = () => {
   const [templates, setTemplates] = useState<BoardTemplate[]>([]);
+  const [systemTemplates, setSystemTemplates] = useState<SystemTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
@@ -26,6 +27,15 @@ export const useBoardTemplates = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchSystemTemplates = async () => {
+    try {
+      const data = await boardTemplatesAPI.getSystemTemplates();
+      setSystemTemplates(data);
+    } catch (err) {
+      console.error('Error fetching system templates:', err);
     }
   };
 
@@ -83,10 +93,12 @@ export const useBoardTemplates = () => {
 
   useEffect(() => {
     fetchTemplates();
+    fetchSystemTemplates();
   }, []);
 
   return {
     templates,
+    systemTemplates,
     loading,
     error,
     createTemplate,
