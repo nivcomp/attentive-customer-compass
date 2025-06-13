@@ -70,8 +70,8 @@ export const tenantsAPI = {
         return [];
       }
       
-      // Type assertion to ensure we return the correct type
-      return (data as TenantUser[]) || [];
+      // Type assertion through unknown to handle dynamic schema types
+      return (data as unknown as TenantUser[]) || [];
     } catch (err) {
       console.error('Error fetching tenant users:', err);
       return [];
@@ -91,8 +91,8 @@ export const tenantsAPI = {
         return [];
       }
       
-      // Type assertion to ensure we return the correct type
-      return (data as TenantProject[]) || [];
+      // Type assertion through unknown to handle dynamic schema types
+      return (data as unknown as TenantProject[]) || [];
     } catch (err) {
       console.error('Error fetching tenant projects:', err);
       return [];
@@ -107,7 +107,7 @@ export const tenantsAPI = {
       .single();
     
     if (error) throw error;
-    return data as TenantUser;
+    return data as unknown as TenantUser;
   },
 
   async createTenantProject(schemaName: string, project: Omit<TenantProject, 'id' | 'created_at'>): Promise<TenantProject> {
@@ -118,6 +118,6 @@ export const tenantsAPI = {
       .single();
     
     if (error) throw error;
-    return data as TenantProject;
+    return data as unknown as TenantProject;
   }
 };
