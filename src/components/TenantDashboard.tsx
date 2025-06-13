@@ -13,8 +13,8 @@ interface TenantDashboardProps {
 }
 
 const TenantDashboard: React.FC<TenantDashboardProps> = ({ tenant }) => {
-  const { data: users, loading: usersLoading } = useTenantUsers(tenant.schema_name);
-  const { data: projects, loading: projectsLoading } = useTenantProjects(tenant.schema_name);
+  const { data: users, isLoading: usersLoading } = useTenantUsers(tenant.schema_name);
+  const { data: projects, isLoading: projectsLoading } = useTenantProjects(tenant.schema_name);
 
   return (
     <div className="space-y-6">

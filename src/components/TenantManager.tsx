@@ -11,7 +11,7 @@ import { useTenants, useCreateTenant } from "@/hooks/useTenants";
 import EmptyStates from "./EmptyStates";
 
 const TenantManager: React.FC = () => {
-  const { data: tenants, loading } = useTenants();
+  const { data: tenants, isLoading } = useTenants();
   const createTenantMutation = useCreateTenant();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newTenant, setNewTenant] = useState({
@@ -31,7 +31,7 @@ const TenantManager: React.FC = () => {
     setIsCreateDialogOpen(false);
   };
 
-  if (loading) {
+  if (isLoading) {
     return <EmptyStates type="loading" />;
   }
 

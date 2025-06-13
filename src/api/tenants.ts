@@ -58,28 +58,52 @@ export const tenantsAPI = {
   },
 
   async getTenantUsers(schemaName: string): Promise<TenantUser[]> {
+    // Use raw SQL query since dynamic schema tables aren't in the type definitions
     const { data, error } = await supabase
-      .from(`${schemaName}.users`)
-      .select('*')
-      .order('created_at', { ascending: false });
+      .rpc('exec_sql', { 
+        query: `SELECT * FROM ${schemaName}.users ORDER BY created_at DESC` 
+      });
     
-    if (error) throw error;
+    if (error) {
+      // Fallback: try direct query (might work in some cases)
+      console.warn('RPC failed, trying direct query:', error);
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from(`${schemaName}.users` as any)
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (fallbackError) throw fallbackError;
+      return fallbackData || [];
+    }
+    
     return data || [];
   },
 
   async getTenantProjects(schemaName: string): Promise<TenantProject[]> {
+    // Use raw SQL query since dynamic schema tables aren't in the type definitions
     const { data, error } = await supabase
-      .from(`${schemaName}.projects`)
-      .select('*')
-      .order('created_at', { ascending: false });
+      .rpc('exec_sql', { 
+        query: `SELECT * FROM ${schemaName}.projects ORDER BY created_at DESC` 
+      });
     
-    if (error) throw error;
+    if (error) {
+      // Fallback: try direct query (might work in some cases)
+      console.warn('RPC failed, trying direct query:', error);
+      const { data: fallbackData, error: fallbackError } = await supabase
+        .from(`${schemaName}.projects` as any)
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (fallbackError) throw fallbackError;
+      return fallbackData || [];
+    }
+    
     return data || [];
   },
 
   async createTenantUser(schemaName: string, user: Omit<TenantUser, 'id' | 'created_at'>): Promise<TenantUser> {
     const { data, error } = await supabase
-      .from(`${schemaName}.users`)
+      .from(`${schemaName}.users` as any)
       .insert([user])
       .select()
       .single();
@@ -90,7 +114,7 @@ export const tenantsAPI = {
 
   async createTenantProject(schemaName: string, project: Omit<TenantProject, 'id' | 'created_at'>): Promise<TenantProject> {
     const { data, error } = await supabase
-      .from(`${schemaName}.projects`)
+      .from(`${schemaName}.projects` as any)
       .insert([project])
       .select()
       .single();
