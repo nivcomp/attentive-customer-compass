@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +16,7 @@ interface FieldEditorProps {
 const FieldEditor: React.FC<FieldEditorProps> = ({ column, onUpdateColumn }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [columnName, setColumnName] = useState(column.name);
-  const [columnType, setColumnType] = useState<'text' | 'number' | 'date' | 'select' | 'status'>(column.column_type);
+  const [columnType, setColumnType] = useState<BoardColumn['column_type']>(column.column_type);
   const [columnRequired, setColumnRequired] = useState(column.is_required);
   const [saving, setSaving] = useState(false);
 
@@ -42,17 +41,6 @@ const FieldEditor: React.FC<FieldEditorProps> = ({ column, onUpdateColumn }) => 
     setColumnType(column.column_type);
     setColumnRequired(column.is_required);
     setIsOpen(false);
-  };
-
-  const getColumnTypeLabel = (type: string) => {
-    const labels = {
-      text: 'טקסט',
-      number: 'מספר',
-      date: 'תאריך',
-      select: 'רשימה',
-      status: 'סטטוס'
-    };
-    return labels[type as keyof typeof labels] || type;
   };
 
   return (
@@ -85,7 +73,7 @@ const FieldEditor: React.FC<FieldEditorProps> = ({ column, onUpdateColumn }) => 
           
           <div className="space-y-2">
             <Label htmlFor="column-type">סוג השדה</Label>
-            <Select value={columnType} onValueChange={(value: any) => setColumnType(value)}>
+            <Select value={columnType} onValueChange={(value: BoardColumn['column_type']) => setColumnType(value)}>
               <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
@@ -95,6 +83,11 @@ const FieldEditor: React.FC<FieldEditorProps> = ({ column, onUpdateColumn }) => 
                 <SelectItem value="date">תאריך</SelectItem>
                 <SelectItem value="select">רשימה</SelectItem>
                 <SelectItem value="status">סטטוס</SelectItem>
+                <SelectItem value="single_select">בחירה יחידה</SelectItem>
+                <SelectItem value="multi_select">בחירה מרובה</SelectItem>
+                <SelectItem value="file">קובץ</SelectItem>
+                <SelectItem value="image">תמונה</SelectItem>
+                <SelectItem value="board_link">קישור לבורד</SelectItem>
               </SelectContent>
             </Select>
           </div>
