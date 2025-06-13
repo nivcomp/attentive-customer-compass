@@ -42,7 +42,7 @@ export const customersAPI = {
     return data;
   },
 
-  async update(id: number, updates: Partial<Customer>): Promise<Customer> {
+  async update(id: number, updates: Omit<Partial<Customer>, 'id' | 'created_at'>): Promise<Customer> {
     const { data, error } = await supabase
       .from('customers')
       .update(updates)
