@@ -1,46 +1,49 @@
 
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useBoardManagerData } from "@/hooks/useBoardManagerData";
-import BoardCreator from "./BoardCreator";
-import BoardPermissionsManager from "./BoardPermissionsManager";
+import { useOptimizedBoardData } from "@/hooks/useOptimizedBoardData";
+import { useOptimizedPermissions } from "@/hooks/useOptimizedPermissions";
+import BoardManagerSkeleton from "./BoardManagerSkeleton";
 import BoardManagerStats from "./BoardManagerStats";
 import RegularBoardsList from "./RegularBoardsList";
-import CustomBoardsList from "./CustomBoardsList";
 import EmptyBoardsState from "./EmptyBoardsState";
 
+// Lazy load components that might not be immediately needed
+const BoardCreator = lazy(() => import("./BoardCreator"));
+const BoardPermissionsManager = lazy(() => import("./BoardPermissionsManager"));
+const VirtualizedBoardsList = lazy(() => import("./VirtualizedBoardsList"));
+
 const BoardManager = () => {
+  const [showCreator, setShowCreator] = React.useState(false);
+  
   const {
     customBoards,
-    showCreator,
-    setShowCreator,
-    selectedBoardForPermissions,
     dynamicBoards,
     regularBoards,
-    organizations,
-    groupBoardsByType,
     totalBoards,
+    regularBoardsCount,
+    dynamicBoardsCount,
+    customBoardsCount,
+    groupBoardsByType,
     loading,
     handleBoardCreated,
     deleteBoardSettings,
     getBoardTypeLabel,
+  } = useOptimizedBoardData();
+
+  const {
+    selectedBoardForPermissions,
     handleTogglePermissions,
-  } = useBoardManagerData();
+  } = useOptimizedPermissions();
+
+  const handleBoardCreatedAndClose = React.useCallback((boardId: string) => {
+    handleBoardCreated(boardId);
+    setShowCreator(false);
+  }, [handleBoardCreated]);
 
   if (loading) {
-    return (
-      <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 rounded w-48 mb-4"></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-32 bg-gray-200 rounded"></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <BoardManagerSkeleton />;
   }
 
   return (
@@ -60,9 +63,9 @@ const BoardManager = () => {
       {/* סטטיסטיקות */}
       <BoardManagerStats
         totalBoards={totalBoards}
-        regularBoardsCount={regularBoards.length}
-        dynamicBoardsCount={dynamicBoards.length}
-        customBoardsCount={customBoards.length}
+        regularBoardsCount={regularBoardsCount}
+        dynamicBoardsCount={dynamicBoardsCount}
+        customBoardsCount={customBoardsCount}
       />
 
       {/* בורדים רגילים עם הרשאות */}
@@ -74,29 +77,37 @@ const BoardManager = () => {
 
       {/* הצגת מנהל הרשאות */}
       {selectedBoardForPermissions && (
-        <BoardPermissionsManager 
-          boardId={selectedBoardForPermissions}
-        />
+        <Suspense fallback={<div className="animate-pulse h-32 bg-gray-100 rounded"></div>}>
+          <BoardPermissionsManager 
+            boardId={selectedBoardForPermissions}
+          />
+        </Suspense>
       )}
 
-      {/* בורדים מקובצים לפי סוג */}
-      <CustomBoardsList
-        groupedBoards={groupBoardsByType}
-        onDeleteBoard={deleteBoardSettings}
-        getBoardTypeLabel={getBoardTypeLabel}
-      />
+      {/* בורדים מקובצים לפי סוג - עם virtualization */}
+      <Suspense fallback={<div className="animate-pulse h-32 bg-gray-100 rounded"></div>}>
+        <VirtualizedBoardsList
+          groupedBoards={groupBoardsByType}
+          onDeleteBoard={deleteBoardSettings}
+          getBoardTypeLabel={getBoardTypeLabel}
+        />
+      </Suspense>
 
       {/* הצגת empty state רק אם אין בורדים כלל */}
       {totalBoards === 0 && (
         <EmptyBoardsState onCreateBoard={() => setShowCreator(true)} />
       )}
 
-      {/* BoardCreator Modal */}
+      {/* BoardCreator Modal - lazy loaded */}
       {showCreator && (
-        <BoardCreator
-          onClose={() => setShowCreator(false)}
-          onBoardCreated={handleBoardCreated}
-        />
+        <Suspense fallback={<div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        </div>}>
+          <BoardCreator
+            onClose={() => setShowCreator(false)}
+            onBoardCreated={handleBoardCreatedAndClose}
+          />
+        </Suspense>
       )}
     </div>
   );
