@@ -15,14 +15,14 @@ export interface BoardTemplate {
   updated_at: string;
 }
 
-// Legacy interface for compatibility
+// Updated SystemTemplate interface to match database schema
 export interface SystemTemplate {
   id: string;
   name: string;
-  board_type: string;
+  category: string;
   description?: string;
-  template_columns: any[];
-  is_system_template: boolean;
+  template_data: any[];
+  is_public: boolean;
   created_at: string;
 }
 
@@ -41,8 +41,8 @@ export const boardTemplatesAPI = {
     const { data, error } = await supabase
       .from('board_templates')
       .select('*')
-      .eq('is_system_template', true)
-      .order('board_type');
+      .eq('is_public', true)
+      .order('category');
     
     if (error) throw error;
     return data || [];
@@ -63,7 +63,7 @@ export const boardTemplatesAPI = {
     const { data, error } = await supabase
       .from('board_templates')
       .select('*')
-      .eq('board_type', boardType)
+      .eq('category', boardType)
       .order('usage_count', { ascending: false });
     
     if (error) throw error;

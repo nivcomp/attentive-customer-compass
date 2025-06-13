@@ -57,7 +57,7 @@ const BoardTypeSelector: React.FC<BoardTypeSelectorProps> = ({
       if (newBoard && template) {
         // יצירת עמודות בהתאם לתבנית
         // כאן נוסיף לוגיקה ליצירת עמודות מהתבנית
-        console.log('Creating columns from template:', template.template_columns);
+        console.log('Creating columns from template:', template.template_data);
       }
 
       if (newBoard) {

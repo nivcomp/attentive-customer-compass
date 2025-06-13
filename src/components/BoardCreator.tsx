@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Save, X } from "lucide-react";
 import { useDynamicBoards } from "@/hooks/useDynamicBoards";
 import { useDynamicBoardColumns } from "@/hooks/useDynamicBoardColumns";
+import { BoardType } from "@/api/boardTypes";
 
 interface BoardCreatorProps {
   onClose: () => void;
@@ -27,7 +27,7 @@ interface FieldConfig {
 const BoardCreator: React.FC<BoardCreatorProps> = ({ onClose, onBoardCreated }) => {
   const [boardName, setBoardName] = useState('');
   const [boardDescription, setBoardDescription] = useState('');
-  const [boardType, setBoardType] = useState<string>('');
+  const [boardType, setBoardType] = useState<BoardType>('custom');
   const [fields, setFields] = useState<FieldConfig[]>([]);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -35,10 +35,10 @@ const BoardCreator: React.FC<BoardCreatorProps> = ({ onClose, onBoardCreated }) 
   const { createColumn } = useDynamicBoardColumns(null);
 
   const boardTypes = [
-    { value: 'companies', label: 'חברות' },
-    { value: 'contacts', label: 'אנשי קשר' },
-    { value: 'deals', label: 'עסקאות' },
-    { value: 'leads', label: 'לידים' }
+    { value: 'tasks', label: 'משימות' },
+    { value: 'customers', label: 'לקוחות' },
+    { value: 'projects', label: 'פרויקטים' },
+    { value: 'custom', label: 'מותאם אישית' }
   ];
 
   const fieldTypes = [
@@ -50,42 +50,38 @@ const BoardCreator: React.FC<BoardCreatorProps> = ({ onClose, onBoardCreated }) 
     { value: 'status', label: 'סטטוס' }
   ];
 
-  const getDefaultFields = (type: string): FieldConfig[] => {
+  const getDefaultFields = (type: BoardType): FieldConfig[] => {
     switch (type) {
-      case 'companies':
+      case 'tasks':
         return [
-          { id: '1', name: 'שם החברה', type: 'text', isRequired: true },
+          { id: '1', name: 'כותרת', type: 'text', isRequired: true },
+          { id: '2', name: 'סטטוס', type: 'status', isRequired: true, options: ['חדש', 'בעבודה', 'בבדיקה', 'הושלם'] },
+          { id: '3', name: 'עדיפות', type: 'single_select', isRequired: false, options: ['נמוכה', 'בינונית', 'גבוהה', 'דחופה'] },
+          { id: '4', name: 'אחראי', type: 'text', isRequired: false },
+          { id: '5', name: 'תאריך יעד', type: 'date', isRequired: false }
+        ];
+      case 'customers':
+        return [
+          { id: '1', name: 'שם הלקוח', type: 'text', isRequired: true },
           { id: '2', name: 'טלפון', type: 'text', isRequired: false },
           { id: '3', name: 'אימייל', type: 'text', isRequired: false },
-          { id: '4', name: 'אתר', type: 'text', isRequired: false }
+          { id: '4', name: 'סטטוס', type: 'status', isRequired: false, options: ['ליד', 'לקוח פוטנציאלי', 'לקוח פעיל', 'לא פעיל'] },
+          { id: '5', name: 'מקור', type: 'single_select', isRequired: false, options: ['אתר', 'הפניה', 'פרסום', 'אחר'] }
         ];
-      case 'contacts':
+      case 'projects':
         return [
-          { id: '1', name: 'שם מלא', type: 'text', isRequired: true },
-          { id: '2', name: 'טלפון', type: 'text', isRequired: false },
-          { id: '3', name: 'אימייל', type: 'text', isRequired: true },
-          { id: '4', name: 'תפקיד', type: 'text', isRequired: false }
-        ];
-      case 'deals':
-        return [
-          { id: '1', name: 'שם העסקה', type: 'text', isRequired: true },
-          { id: '2', name: 'סכום', type: 'number', isRequired: true },
-          { id: '3', name: 'סטטוס', type: 'status', isRequired: true, options: ['מוקדם', 'הצעה', 'משא ומתן', 'נסגר'] },
-          { id: '4', name: 'תאריך סגירה צפוי', type: 'date', isRequired: false }
-        ];
-      case 'leads':
-        return [
-          { id: '1', name: 'שם הליד', type: 'text', isRequired: true },
-          { id: '2', name: 'מקור', type: 'single_select', isRequired: false, options: ['אתר', 'מדיה חברתית', 'הפניה', 'פרסום'] },
-          { id: '3', name: 'עניין', type: 'text', isRequired: false },
-          { id: '4', name: 'איכות', type: 'status', isRequired: false, options: ['חם', 'חמים', 'קר'] }
+          { id: '1', name: 'שם הפרויקט', type: 'text', isRequired: true },
+          { id: '2', name: 'לקוח', type: 'text', isRequired: false },
+          { id: '3', name: 'תקציב', type: 'number', isRequired: false },
+          { id: '4', name: 'לוח זמנים', type: 'text', isRequired: false },
+          { id: '5', name: 'סטטוס', type: 'status', isRequired: true, options: ['תכנון', 'בביצוע', 'בבדיקה', 'הושלם', 'מושהה'] }
         ];
       default:
         return [];
     }
   };
 
-  const handleBoardTypeChange = (value: string) => {
+  const handleBoardTypeChange = (value: BoardType) => {
     setBoardType(value);
     setFields(getDefaultFields(value));
   };
@@ -150,10 +146,11 @@ const BoardCreator: React.FC<BoardCreatorProps> = ({ onClose, onBoardCreated }) 
 
     setIsCreating(true);
     try {
-      // יצירת הבורד
+      // יצירת הבורד עם board_type
       const newBoard = await createBoard({
         name: boardName,
-        description: boardDescription || `בורד ${boardTypes.find(t => t.value === boardType)?.label || boardType}`
+        description: boardDescription || `בורד ${boardTypes.find(t => t.value === boardType)?.label || boardType}`,
+        board_type: boardType
       });
 
       if (newBoard) {

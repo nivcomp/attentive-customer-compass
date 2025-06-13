@@ -4,10 +4,10 @@ export type BoardType = 'tasks' | 'customers' | 'projects' | 'custom';
 export interface SystemTemplate {
   id: string;
   name: string;
-  board_type: BoardType;
+  category: string;
   description?: string;
-  template_columns: any[];
-  is_system_template: boolean;
+  template_data: any[];
+  is_public: boolean;
   created_at: string;
 }
 

@@ -18,11 +18,21 @@ export const useBoardTypes = () => {
       const { data, error } = await supabase
         .from('board_templates')
         .select('*')
-        .eq('is_system_template', true)
-        .order('board_type');
+        .eq('is_public', true)
+        .order('category');
       
       if (error) throw error;
-      setSystemTemplates(data || []);
+      // Transform the data to match SystemTemplate interface
+      const transformedData: SystemTemplate[] = (data || []).map(item => ({
+        id: item.id,
+        name: item.name,
+        category: item.category,
+        description: item.description,
+        template_data: item.template_data,
+        is_public: item.is_public,
+        created_at: item.created_at
+      }));
+      setSystemTemplates(transformedData);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'שגיאה בטעינת תבניות המערכת';
       setError(errorMessage);
@@ -38,7 +48,7 @@ export const useBoardTypes = () => {
   };
 
   const getTemplatesByType = (boardType: BoardType) => {
-    return systemTemplates.filter(template => template.board_type === boardType);
+    return systemTemplates.filter(template => template.category === boardType);
   };
 
   const createBoardFromTemplate = async (
@@ -58,7 +68,7 @@ export const useBoardTypes = () => {
         .insert([{
           name: boardName,
           description: boardDescription,
-          board_type: template.board_type
+          board_type: template.category
         }])
         .select()
         .single();
@@ -66,8 +76,8 @@ export const useBoardTypes = () => {
       if (boardError) throw boardError;
 
       // יצירת העמודות מהתבנית
-      if (Array.isArray(template.template_columns) && template.template_columns.length > 0) {
-        const columns = template.template_columns.map((col: any) => ({
+      if (Array.isArray(template.template_data) && template.template_data.length > 0) {
+        const columns = template.template_data.map((col: any) => ({
           board_id: boardData.id,
           name: col.name,
           column_type: col.type,

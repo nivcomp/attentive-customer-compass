@@ -8,7 +8,7 @@ export interface DynamicBoard {
   id: string;
   name: string;
   description?: string;
-  board_type: string;
+  board_type?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -48,12 +48,16 @@ export const useDynamicBoards = () => {
   const createBoard = async (boardData: {
     name: string;
     description?: string;
-    board_type: BoardType;
+    board_type?: BoardType;
   }) => {
     try {
       const { data, error } = await supabase
         .from('dynamic_boards')
-        .insert([boardData])
+        .insert([{
+          name: boardData.name,
+          description: boardData.description,
+          board_type: boardData.board_type || 'custom'
+        }])
         .select()
         .single();
       
