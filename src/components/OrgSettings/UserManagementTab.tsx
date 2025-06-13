@@ -11,25 +11,25 @@ interface UserManagementTabProps {
 
 const UserManagementTab = ({ organizationId }: UserManagementTabProps) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* הזמן משתמש חדש */}
-      <Card className="shadow-sm border-0 shadow-lg">
-        <CardHeader className="pb-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-t-lg">
-          <CardTitle className="flex items-center gap-3 text-xl text-gray-800">
-            <UserPlus className="h-6 w-6 text-green-600" />
+      <Card className="border-0 shadow-lg rounded-2xl overflow-hidden">
+        <CardHeader className="pb-4 md:pb-6 bg-gradient-to-l from-green-50 to-emerald-50 border-b border-green-100/50">
+          <CardTitle className="flex items-center gap-3 text-lg md:text-xl text-gray-800">
+            <UserPlus className="h-5 w-5 md:h-6 md:w-6 text-green-600" />
             הזמן משתמש חדש
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-8">
+        <CardContent className="p-4 md:p-6 lg:p-8">
           <UserInviteForm organizationId={organizationId} />
         </CardContent>
       </Card>
 
       {/* רשימת חברים */}
-      <Card className="shadow-sm border-0 shadow-lg">
-        <CardHeader className="pb-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
-          <CardTitle className="flex items-center gap-3 text-xl text-gray-800">
-            <Users className="h-6 w-6 text-blue-600" />
+      <Card className="border-0 shadow-lg rounded-2xl overflow-hidden">
+        <CardHeader className="pb-4 md:pb-6 bg-gradient-to-l from-blue-50 to-indigo-50 border-b border-blue-100/50">
+          <CardTitle className="flex items-center gap-3 text-lg md:text-xl text-gray-800">
+            <Users className="h-5 w-5 md:h-6 md:w-6 text-blue-600" />
             חברי הארגון
           </CardTitle>
         </CardHeader>

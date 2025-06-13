@@ -85,71 +85,83 @@ const OrgSettings = ({ organizationId = "demo-org-id" }: OrgSettingsProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
-      <div className="max-w-full mx-auto">
-        {/* Header */}
-        <div className="bg-white rounded-xl shadow-sm border mb-8 p-6 lg:p-8">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div className="flex-1">
-              <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 flex items-center gap-3 mb-2">
-                <Building className="h-8 w-8 lg:h-10 lg:w-10 text-blue-600" />
-                הגדרות ארגון
-              </h1>
-              <p className="text-gray-600 text-lg">ניהול הגדרות הארגון, משתמשים ואבטחה</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30">
+      <div className="container mx-auto px-4 py-4 md:py-6 lg:py-8 max-w-7xl">
+        {/* Header - מותאם לנייד */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100/50 mb-6 md:mb-8">
+          <div className="p-4 md:p-6 lg:p-8">
+            <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 md:gap-3 mb-2">
+                  <Building className="h-6 w-6 md:h-8 md:w-8 text-blue-600 flex-shrink-0" />
+                  <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">
+                    הגדרות ארגון
+                  </h1>
+                </div>
+                <p className="text-sm md:text-base text-gray-600">
+                  ניהול הגדרות הארגון, משתמשים ואבטחה
+                </p>
+              </div>
+              
+              <Button 
+                onClick={handleSaveSettings} 
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 h-auto text-base font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-200"
+                size="lg"
+              >
+                <Save className="h-4 w-4 mr-2" />
+                שמור הגדרות
+              </Button>
             </div>
-            
-            <Button 
-              onClick={handleSaveSettings} 
-              className="bg-blue-600 hover:bg-blue-700 lg:min-w-[200px]"
-              size="lg"
-            >
-              <Save className="h-5 w-5 mr-2" />
-              שמור הגדרות
-            </Button>
           </div>
         </div>
 
-        {/* Settings Tabs */}
-        <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+        {/* Settings Tabs - מותאם לנייד */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100/50 overflow-hidden">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            {/* Tab Navigation */}
-            <div className="border-b border-gray-200 bg-gray-50/80 px-6 lg:px-8 py-2">
-              <TabsList className="w-full h-auto p-1 bg-transparent justify-start overflow-x-auto">
-                <div className="flex gap-1 min-w-max">
-                  <TabsTrigger 
-                    value="general" 
-                    className="flex items-center gap-3 px-6 py-4 text-base font-medium whitespace-nowrap data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-lg"
-                  >
-                    <Settings className="h-5 w-5" />
-                    הגדרות כלליות
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="users" 
-                    className="flex items-center gap-3 px-6 py-4 text-base font-medium whitespace-nowrap data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-lg"
-                  >
-                    <Users className="h-5 w-5" />
-                    ניהול משתמשים
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="security" 
-                    className="flex items-center gap-3 px-6 py-4 text-base font-medium whitespace-nowrap data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-lg"
-                  >
-                    <Shield className="h-5 w-5" />
-                    הגדרות אבטחה
-                  </TabsTrigger>
-                  <TabsTrigger 
-                    value="audit" 
-                    className="flex items-center gap-3 px-6 py-4 text-base font-medium whitespace-nowrap data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-lg"
-                  >
-                    <History className="h-5 w-5" />
-                    יומן פעילות
-                  </TabsTrigger>
-                </div>
-              </TabsList>
+            {/* Tab Navigation - שורה אחת עם גלילה אופקית בנייד */}
+            <div className="border-b border-gray-200 bg-gray-50/80">
+              <div className="px-4 md:px-6 lg:px-8 py-3">
+                <TabsList className="w-full h-auto p-0 bg-transparent justify-start">
+                  <div className="flex gap-1 overflow-x-auto scrollbar-hide pb-1">
+                    <TabsTrigger 
+                      value="general" 
+                      className="flex items-center gap-2 px-4 py-3 text-sm md:text-base font-medium whitespace-nowrap data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 rounded-lg border border-transparent data-[state=active]:border-blue-200 hover:bg-white/70 transition-all duration-200"
+                    >
+                      <Settings className="h-4 w-4" />
+                      <span className="hidden sm:inline">הגדרות כלליות</span>
+                      <span className="sm:hidden">כללי</span>
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="users" 
+                      className="flex items-center gap-2 px-4 py-3 text-sm md:text-base font-medium whitespace-nowrap data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 rounded-lg border border-transparent data-[state=active]:border-blue-200 hover:bg-white/70 transition-all duration-200"
+                    >
+                      <Users className="h-4 w-4" />
+                      <span className="hidden sm:inline">ניהול משתמשים</span>
+                      <span className="sm:hidden">משתמשים</span>
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="security" 
+                      className="flex items-center gap-2 px-4 py-3 text-sm md:text-base font-medium whitespace-nowrap data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 rounded-lg border border-transparent data-[state=active]:border-blue-200 hover:bg-white/70 transition-all duration-200"
+                    >
+                      <Shield className="h-4 w-4" />
+                      <span className="hidden sm:inline">הגדרות אבטחה</span>
+                      <span className="sm:hidden">אבטחה</span>
+                    </TabsTrigger>
+                    <TabsTrigger 
+                      value="audit" 
+                      className="flex items-center gap-2 px-4 py-3 text-sm md:text-base font-medium whitespace-nowrap data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-blue-700 rounded-lg border border-transparent data-[state=active]:border-blue-200 hover:bg-white/70 transition-all duration-200"
+                    >
+                      <History className="h-4 w-4" />
+                      <span className="hidden sm:inline">יומן פעילות</span>
+                      <span className="sm:hidden">יומן</span>
+                    </TabsTrigger>
+                  </div>
+                </TabsList>
+              </div>
             </div>
 
-            {/* Tab Content */}
-            <div className="p-6 lg:p-8 xl:p-12">
+            {/* Tab Content - ריווח מותאם */}
+            <div className="p-4 md:p-6 lg:p-8">
               <TabsContent value="general" className="mt-0">
                 <GeneralSettingsTab 
                   orgSettings={orgSettings}
