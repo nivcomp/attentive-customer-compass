@@ -38,14 +38,14 @@ export const navItems = [
     icon: <UserPlus className="h-4 w-4" />,
   },
   {
-    title: "ניהול בורדים",
-    to: "/board-management",
-    icon: <Layout className="h-4 w-4" />,
-  },
-  {
     title: "בורדים דינמיים",
     to: "/dynamic-boards",
     icon: <LayoutDashboard className="h-4 w-4" />,
+  },
+  {
+    title: "הגדרות מערכת",
+    to: "/central-settings",
+    icon: <Settings className="h-4 w-4" />,
   },
   {
     title: "ארגונים",
@@ -56,10 +56,5 @@ export const navItems = [
     title: "דיירים",
     to: "/tenants", 
     icon: <Database className="h-4 w-4" />,
-  },
-  {
-    title: "הגדרות",
-    to: "/settings",
-    icon: <Settings className="h-4 w-4" />,
   },
 ];

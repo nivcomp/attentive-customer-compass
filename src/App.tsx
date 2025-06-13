@@ -13,11 +13,11 @@ import Leads from "./pages/Leads";
 import Settings from "./pages/Settings";
 import Organizations from "./pages/Organizations";
 import Tenants from "./pages/Tenants";
-import BoardManagement from "./pages/BoardManagement";
 import DynamicBoards from "./pages/DynamicBoards";
 import OrgDashboard from "./pages/OrgDashboard";
 import OrgSettings from "./pages/OrgSettings";
 import Automations from "./pages/Automations";
+import CentralSettings from "./pages/CentralSettings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,10 +40,10 @@ const App = () => (
               <Route path="/settings" element={<Settings />} />
               <Route path="/organizations" element={<Organizations />} />
               <Route path="/tenants" element={<Tenants />} />
-              <Route path="/board-management" element={<BoardManagement />} />
               <Route path="/dynamic-boards" element={<DynamicBoards />} />
               <Route path="/org-dashboard" element={<OrgDashboard />} />
               <Route path="/org-settings" element={<OrgSettings />} />
+              <Route path="/central-settings" element={<CentralSettings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
