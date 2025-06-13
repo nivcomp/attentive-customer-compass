@@ -1,286 +1,187 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Textarea } from "@/components/ui/textarea";
-import { Plus, Settings, Trash2, Edit, GripVertical } from "lucide-react";
+import { Plus, Settings, Search, Filter } from "lucide-react";
 import { useDynamicBoards } from "@/hooks/useDynamicBoards";
 import { useDynamicBoardColumns } from "@/hooks/useDynamicBoardColumns";
-import { DynamicBoardColumn } from "@/api/dynamicBoard";
-import DynamicColumnEditor from "./DynamicColumnEditor";
+import { useDynamicBoardItems } from "@/hooks/useDynamicBoardItems";
+import ViewSelector, { ViewType } from "./ViewSelector";
+import DynamicBoardCardsView from "./DynamicBoardCardsView";
+import { DynamicBoard } from "@/api/dynamicBoard";
 
 const DynamicBoardBuilder = () => {
   const { boards, loading: boardsLoading, createBoard } = useDynamicBoards();
-  const [selectedBoardId, setSelectedBoardId] = useState<string | null>(null);
-  const { columns, createColumn, updateColumn, deleteColumn } = useDynamicBoardColumns(selectedBoardId);
+  const [selectedBoard, setSelectedBoard] = useState<DynamicBoard | null>(null);
+  const [currentView, setCurrentView] = useState<ViewType>('table');
+  const [searchQuery, setSearchQuery] = useState('');
   
-  const [newBoardName, setNewBoardName] = useState('');
-  const [newBoardDescription, setNewBoardDescription] = useState('');
-  const [showCreateBoard, setShowCreateBoard] = useState(false);
-  const [showCreateColumn, setShowCreateColumn] = useState(false);
-  
-  const [columnName, setColumnName] = useState('');
-  const [columnType, setColumnType] = useState<'text' | 'number' | 'date' | 'single_select' | 'multi_select' | 'status'>('text');
-  const [columnRequired, setColumnRequired] = useState(false);
+  const { columns, loading: columnsLoading } = useDynamicBoardColumns(selectedBoard?.id || null);
+  const { items, loading: itemsLoading } = useDynamicBoardItems(selectedBoard?.id || null);
+
+  // פילטר פריטים לפי חיפוש
+  const filteredItems = items.filter(item => {
+    if (!searchQuery.trim()) return true;
+    
+    const query = searchQuery.toLowerCase();
+    return Object.values(item.data).some(value => 
+      String(value).toLowerCase().includes(query)
+    );
+  });
 
   const handleCreateBoard = async () => {
-    if (!newBoardName.trim()) return;
-    
-    const board = await createBoard({
-      name: newBoardName,
-      description: newBoardDescription || undefined,
-    });
-    
-    if (board) {
-      setNewBoardName('');
-      setNewBoardDescription('');
-      setShowCreateBoard(false);
-      setSelectedBoardId(board.id);
+    const name = prompt('שם הבורד החדש:');
+    if (name) {
+      const newBoard = await createBoard({ name, description: '' });
+      if (newBoard) {
+        setSelectedBoard(newBoard);
+      }
     }
   };
 
-  const handleCreateColumn = async () => {
-    if (!columnName.trim() || !selectedBoardId) return;
-    
-    const column = await createColumn({
-      board_id: selectedBoardId,
-      name: columnName,
-      column_type: columnType,
-      column_order: columns.length,
-      is_required: columnRequired,
-      options: {},
-    });
-    
-    if (column) {
-      setColumnName('');
-      setColumnType('text');
-      setColumnRequired(false);
-      setShowCreateColumn(false);
+  const renderBoardContent = () => {
+    if (!selectedBoard) {
+      return (
+        <div className="text-center py-12">
+          <div className="text-muted-foreground mb-4">
+            <div className="text-lg mb-2">בחר בורד לעריכה או צור חדש</div>
+          </div>
+          <Button onClick={handleCreateBoard}>
+            <Plus className="h-4 w-4 ml-2" />
+            צור בורד חדש
+          </Button>
+        </div>
+      );
     }
-  };
 
-  const getColumnTypeLabel = (type: string) => {
-    const labels = {
-      text: 'טקסט',
-      number: 'מספר',
-      date: 'תאריך',
-      single_select: 'בחירה יחידה',
-      multi_select: 'בחירה מרובה',
-      status: 'סטטוס'
-    };
-    return labels[type as keyof typeof labels] || type;
-  };
+    if (columnsLoading || itemsLoading) {
+      return <div className="text-center py-8">טוען נתונים...</div>;
+    }
 
-  const getColumnTypeColor = (type: string) => {
-    const colors = {
-      text: 'bg-blue-100 text-blue-800',
-      number: 'bg-green-100 text-green-800',
-      date: 'bg-purple-100 text-purple-800',
-      single_select: 'bg-orange-100 text-orange-800',
-      multi_select: 'bg-yellow-100 text-yellow-800',
-      status: 'bg-red-100 text-red-800'
-    };
-    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+    return (
+      <div className="space-y-4">
+        {/* כלי בקרה */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2 flex-1">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Input
+                placeholder="חפש בנתונים..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pr-10"
+              />
+            </div>
+            <Button variant="outline" size="sm">
+              <Filter className="h-4 w-4 ml-2" />
+              פילטרים
+            </Button>
+          </div>
+          
+          <ViewSelector
+            currentView={currentView}
+            onViewChange={setCurrentView}
+            itemCount={filteredItems.length}
+          />
+        </div>
+
+        {/* תוכן הבורד */}
+        <div className="border rounded-lg p-4 bg-card">
+          {currentView === 'table' && (
+            <div className="text-center py-8 text-muted-foreground">
+              תצוגת טבלה - יתווסף בהמשך
+            </div>
+          )}
+          
+          {currentView === 'cards' && (
+            <DynamicBoardCardsView
+              items={filteredItems}
+              columns={columns}
+              onEditItem={(item) => console.log('Edit item:', item)}
+              onDeleteItem={(item) => console.log('Delete item:', item)}
+            />
+          )}
+          
+          {currentView === 'kanban' && (
+            <div className="text-center py-8 text-muted-foreground">
+              תצוגת קנבן - יתווסף בהמשך
+            </div>
+          )}
+          
+          {currentView === 'list' && (
+            <div className="text-center py-8 text-muted-foreground">
+              תצוגת רשימה - יתווסף בהמשך
+            </div>
+          )}
+        </div>
+      </div>
+    );
   };
 
   if (boardsLoading) {
-    return <div className="flex justify-center p-8">טוען...</div>;
+    return <div className="text-center py-8">טוען בורדים...</div>;
   }
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">בונה בורדים דינמיים</h2>
-        <Dialog open={showCreateBoard} onOpenChange={setShowCreateBoard}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="h-4 w-4 mr-2" />
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center justify-between">
+            <span>בורדים דינמיים</span>
+            <Button onClick={handleCreateBoard} size="sm">
+              <Plus className="h-4 w-4 ml-2" />
               בורד חדש
             </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>יצירת בורד חדש</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="board-name">שם הבורד</Label>
-                <Input
-                  id="board-name"
-                  value={newBoardName}
-                  onChange={(e) => setNewBoardName(e.target.value)}
-                  placeholder="הכנס שם לבורד"
-                />
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {boards.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="text-muted-foreground mb-4">
+                <div className="text-lg mb-2">אין בורדים במערכת</div>
+                <div className="text-sm">צור את הבורד הראשון שלך</div>
               </div>
-              <div>
-                <Label htmlFor="board-description">תיאור</Label>
-                <Textarea
-                  id="board-description"
-                  value={newBoardDescription}
-                  onChange={(e) => setNewBoardDescription(e.target.value)}
-                  placeholder="תיאור אופציונלי לבורד"
-                />
-              </div>
-              <Button onClick={handleCreateBoard} className="w-full">
-                צור בורד
+              <Button onClick={handleCreateBoard}>
+                <Plus className="h-4 w-4 ml-2" />
+                צור בורד ראשון
               </Button>
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>הבורדים שלי</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {boards.map((board) => (
-                <div
-                  key={board.id}
-                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                    selectedBoardId === board.id
-                      ? 'bg-blue-50 border-blue-200'
-                      : 'hover:bg-gray-50'
+                <Card 
+                  key={board.id} 
+                  className={`cursor-pointer transition-all hover:shadow-md ${
+                    selectedBoard?.id === board.id ? 'ring-2 ring-primary' : ''
                   }`}
-                  onClick={() => setSelectedBoardId(board.id)}
+                  onClick={() => setSelectedBoard(board)}
                 >
-                  <div className="font-medium">{board.name}</div>
-                  {board.description && (
-                    <div className="text-sm text-muted-foreground mt-1">
-                      {board.description}
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base">{board.name}</CardTitle>
+                    {board.description && (
+                      <p className="text-sm text-muted-foreground">
+                        {board.description}
+                      </p>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>נוצר: {new Date(board.created_at).toLocaleDateString('he-IL')}</span>
+                      <Badge variant="outline" size="sm">
+                        {selectedBoard?.id === board.id ? 'נבחר' : 'לחץ לבחירה'}
+                      </Badge>
                     </div>
-                  )}
-                </div>
+                  </CardContent>
+                </Card>
               ))}
-              {boards.length === 0 && (
-                <div className="text-center text-muted-foreground py-4">
-                  אין בורדים זמינים
-                </div>
-              )}
             </div>
-          </CardContent>
-        </Card>
+          )}
+        </CardContent>
+      </Card>
 
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>
-                {selectedBoardId ? 'עמודות הבורד' : 'בחר בורד לעריכה'}
-              </CardTitle>
-              {selectedBoardId && (
-                <Dialog open={showCreateColumn} onOpenChange={setShowCreateColumn}>
-                  <DialogTrigger asChild>
-                    <Button size="sm">
-                      <Plus className="h-4 w-4 mr-2" />
-                      עמודה חדשה
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>הוספת עמודה חדשה</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="column-name">שם העמודה</Label>
-                        <Input
-                          id="column-name"
-                          value={columnName}
-                          onChange={(e) => setColumnName(e.target.value)}
-                          placeholder="הכנס שם לעמודה"
-                        />
-                      </div>
-                      <div>
-                        <Label htmlFor="column-type">סוג העמודה</Label>
-                        <Select value={columnType} onValueChange={(value: any) => setColumnType(value)}>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="text">טקסט</SelectItem>
-                            <SelectItem value="number">מספר</SelectItem>
-                            <SelectItem value="date">תאריך</SelectItem>
-                            <SelectItem value="single_select">בחירה יחידה</SelectItem>
-                            <SelectItem value="multi_select">בחירה מרובה</SelectItem>
-                            <SelectItem value="status">סטטוס</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                        <input
-                          type="checkbox"
-                          id="required"
-                          checked={columnRequired}
-                          onChange={(e) => setColumnRequired(e.target.checked)}
-                        />
-                        <Label htmlFor="required">שדה חובה</Label>
-                      </div>
-                      <Button onClick={handleCreateColumn} className="w-full">
-                        הוסף עמודה
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent>
-            {selectedBoardId ? (
-              <div className="space-y-3">
-                {columns.map((column) => (
-                  <div
-                    key={column.id}
-                    className="flex items-center justify-between p-3 border rounded-lg"
-                  >
-                    <div className="flex items-center gap-3">
-                      <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
-                      <div>
-                        <div className="font-medium">{column.name}</div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge className={getColumnTypeColor(column.column_type)}>
-                            {getColumnTypeLabel(column.column_type)}
-                          </Badge>
-                          {column.is_required && (
-                            <Badge variant="secondary">חובה</Badge>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <DynamicColumnEditor
-                        column={column}
-                        onUpdateColumn={updateColumn}
-                      />
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteColumn(column.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-                {columns.length === 0 && (
-                  <div className="text-center text-muted-foreground py-8">
-                    אין עמודות בבורד זה. הוסף עמודה חדשה כדי להתחיל.
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="text-center text-muted-foreground py-8">
-                בחר בורד מהרשימה כדי לערוך את העמודות שלו
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      {renderBoardContent()}
     </div>
   );
 };
