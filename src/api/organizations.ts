@@ -8,6 +8,15 @@ export interface Organization {
   subdomain: string;
   settings: Json;
   created_at: string;
+  logo_url?: string | null;
+  primary_color?: string;
+  secondary_color?: string;
+  board_creation_policy?: string;
+  default_board_permission?: string;
+  require_board_approval?: boolean;
+  allowed_email_domains?: string[] | null;
+  restrict_invitations_to_admins?: boolean;
+  session_timeout_hours?: number;
 }
 
 export interface OrganizationUser {

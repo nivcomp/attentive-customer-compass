@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -61,7 +60,7 @@ const OrgSettings = ({ organizationId = "demo-org-id" }: OrgSettingsProps) => {
   const removeMemberMutation = useRemoveOrganizationMember(organizationId);
   const updateOrgMutation = useUpdateOrganization();
 
-  // Mock data for demonstration
+  // Get current organization or use mock data for demonstration
   const currentOrg = organizations?.[0] || {
     id: organizationId,
     name: 'חברת הדמו',
@@ -75,7 +74,8 @@ const OrgSettings = ({ organizationId = "demo-org-id" }: OrgSettingsProps) => {
     allowed_email_domains: ['company.com'],
     restrict_invitations_to_admins: false,
     session_timeout_hours: 24,
-    settings: {}
+    settings: {},
+    created_at: new Date().toISOString()
   };
 
   const mockAuditLog: AuditLogEntry[] = [
@@ -102,14 +102,14 @@ const OrgSettings = ({ organizationId = "demo-org-id" }: OrgSettingsProps) => {
   const [orgSettings, setOrgSettings] = useState({
     name: currentOrg.name,
     logo_url: currentOrg.logo_url || '',
-    primary_color: currentOrg.primary_color,
-    secondary_color: currentOrg.secondary_color,
-    board_creation_policy: currentOrg.board_creation_policy,
-    default_board_permission: currentOrg.default_board_permission,
-    require_board_approval: currentOrg.require_board_approval,
+    primary_color: currentOrg.primary_color || '#3B82F6',
+    secondary_color: currentOrg.secondary_color || '#1E40AF',
+    board_creation_policy: currentOrg.board_creation_policy || 'everyone',
+    default_board_permission: currentOrg.default_board_permission || 'view',
+    require_board_approval: currentOrg.require_board_approval || false,
     allowed_email_domains: currentOrg.allowed_email_domains?.join(', ') || '',
-    restrict_invitations_to_admins: currentOrg.restrict_invitations_to_admins,
-    session_timeout_hours: currentOrg.session_timeout_hours
+    restrict_invitations_to_admins: currentOrg.restrict_invitations_to_admins || false,
+    session_timeout_hours: currentOrg.session_timeout_hours || 24
   });
 
   const handleInviteUser = async () => {
