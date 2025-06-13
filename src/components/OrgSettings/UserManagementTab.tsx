@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserPlus } from "lucide-react";
+import { UserPlus, Users } from "lucide-react";
 import UserInviteForm from './UserInviteForm';
 import MembersTable from './MembersTable';
 
@@ -12,10 +12,11 @@ interface UserManagementTabProps {
 const UserManagementTab = ({ organizationId }: UserManagementTabProps) => {
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <UserPlus className="h-5 w-5" />
+      {/* הזמן משתמש חדש */}
+      <Card className="shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <UserPlus className="h-5 w-5 text-green-600" />
             הזמן משתמש חדש
           </CardTitle>
         </CardHeader>
@@ -24,12 +25,18 @@ const UserManagementTab = ({ organizationId }: UserManagementTabProps) => {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>חברי הארגון</CardTitle>
+      {/* רשימת חברים */}
+      <Card className="shadow-sm">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Users className="h-5 w-5 text-blue-600" />
+            חברי הארגון
+          </CardTitle>
         </CardHeader>
-        <CardContent>
-          <MembersTable organizationId={organizationId} />
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <MembersTable organizationId={organizationId} />
+          </div>
         </CardContent>
       </Card>
     </div>
