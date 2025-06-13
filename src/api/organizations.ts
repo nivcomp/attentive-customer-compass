@@ -1,11 +1,12 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import { Json } from '@/integrations/supabase/types';
 
 export interface Organization {
   id: string;
   name: string;
   subdomain: string;
-  settings: Record<string, any>;
+  settings: Json;
   created_at: string;
 }
 
@@ -13,8 +14,8 @@ export interface OrganizationUser {
   id: string;
   user_id: string;
   organization_id: string;
-  role: 'owner' | 'admin' | 'member';
-  status: 'active' | 'inactive' | 'pending';
+  role: string;
+  status: string;
   joined_at: string;
 }
 
