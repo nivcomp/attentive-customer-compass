@@ -27,8 +27,8 @@ const Navigation = () => {
 
   return (
     <>
-      <nav className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4">
+      <nav className="bg-white shadow-sm border-b w-full">
+        <div className="w-full px-4">
           <div className="flex justify-between h-16">
             <div className="flex">
               <div className="flex space-x-8 rtl:space-x-reverse">

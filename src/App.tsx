@@ -26,9 +26,9 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <BrowserRouter>
-        <div className="min-h-screen flex">
+        <div className="min-h-screen flex flex-col w-full">
           <Navigation />
-          <main className="flex-1">
+          <main className="flex-1 w-full">
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/contacts" element={<Contacts />} />

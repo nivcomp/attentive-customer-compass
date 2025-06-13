@@ -10,7 +10,7 @@ import { Settings as SettingsIcon, User, Bell, Shield, Database } from "lucide-r
 const Settings = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50/30 w-full">
-      <div className="w-full px-4 py-4 md:py-6 lg:py-8 max-w-7xl mx-auto">
+      <div className="w-full px-4 py-4 md:py-6 lg:py-8">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100/50 mb-6 md:mb-8">
           <div className="p-4 md:p-6 lg:p-8">
