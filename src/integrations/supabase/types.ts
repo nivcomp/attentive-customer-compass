@@ -664,6 +664,63 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          converted_at: string | null
+          converted_to_board_id: string | null
+          converted_to_item_id: string | null
+          created_at: string | null
+          id: string
+          name: string
+          notes: string | null
+          rating: number | null
+          source: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          converted_at?: string | null
+          converted_to_board_id?: string | null
+          converted_to_item_id?: string | null
+          created_at?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          rating?: number | null
+          source?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          converted_at?: string | null
+          converted_to_board_id?: string | null
+          converted_to_item_id?: string | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          rating?: number | null
+          source?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_converted_to_board_id_fkey"
+            columns: ["converted_to_board_id"]
+            isOneToOne: false
+            referencedRelation: "dynamic_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_converted_to_item_id_fkey"
+            columns: ["converted_to_item_id"]
+            isOneToOne: false
+            referencedRelation: "dynamic_board_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

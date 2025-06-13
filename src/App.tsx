@@ -12,6 +12,7 @@ import BoardManagement from "./pages/BoardManagement";
 import Contacts from "./pages/Contacts";
 import Activities from "./pages/Activities";
 import Deals from "./pages/Deals";
+import Leads from "./pages/Leads";
 import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
               <Route path="/contacts" element={<Contacts />} />
               <Route path="/activities" element={<Activities />} />
               <Route path="/deals" element={<Deals />} />
+              <Route path="/leads" element={<Leads />} />
               <Route path="/dynamic-boards" element={<DynamicBoards />} />
               <Route path="/board-builder" element={<PlaceholderPage title="בונה לוחות" />} />
               <Route path="/board-management" element={<BoardManagement />} />
