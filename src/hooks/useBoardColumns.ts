@@ -24,7 +24,14 @@ export const useBoardColumns = (boardId: string | null) => {
         .order('column_order', { ascending: true });
 
       if (error) throw error;
-      setColumns(data || []);
+      
+      // Type assertion to ensure compatibility with our BoardColumn interface
+      const typedData = data?.map(col => ({
+        ...col,
+        column_type: col.column_type as 'text' | 'number' | 'date' | 'select' | 'status'
+      })) || [];
+      
+      setColumns(typedData);
     } catch (error) {
       console.error('Error fetching columns:', error);
       toast({
@@ -47,13 +54,19 @@ export const useBoardColumns = (boardId: string | null) => {
 
       if (error) throw error;
       
-      setColumns(prev => [...prev, data].sort((a, b) => a.column_order - b.column_order));
+      // Type assertion for the returned data
+      const typedData = {
+        ...data,
+        column_type: data.column_type as 'text' | 'number' | 'date' | 'select' | 'status'
+      };
+      
+      setColumns(prev => [...prev, typedData].sort((a, b) => a.column_order - b.column_order));
       toast({
         title: "הצלחה",
         description: "העמודה נוצרה בהצלחה",
       });
       
-      return data;
+      return typedData;
     } catch (error) {
       console.error('Error creating column:', error);
       toast({
@@ -76,13 +89,19 @@ export const useBoardColumns = (boardId: string | null) => {
 
       if (error) throw error;
       
-      setColumns(prev => prev.map(col => col.id === id ? data : col));
+      // Type assertion for the returned data
+      const typedData = {
+        ...data,
+        column_type: data.column_type as 'text' | 'number' | 'date' | 'select' | 'status'
+      };
+      
+      setColumns(prev => prev.map(col => col.id === id ? typedData : col));
       toast({
         title: "הצלחה",
         description: "העמודה עודכנה בהצלחה",
       });
       
-      return data;
+      return typedData;
     } catch (error) {
       console.error('Error updating column:', error);
       toast({
