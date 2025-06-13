@@ -1,126 +1,70 @@
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { Board, BoardColumn, BoardItem, BoardView } from '@/types/board';
-import { useToast } from '@/hooks/use-toast';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { boardsAPI, Board } from '@/api/boards';
+import { toast } from 'sonner';
 
 export const useBoards = () => {
-  const [boards, setBoards] = useState<Board[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+  return useQuery({
+    queryKey: ['boards'],
+    queryFn: boardsAPI.getAll,
+  });
+};
 
-  const fetchBoards = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('boards')
-        .select('*')
-        .order('created_at', { ascending: false });
+export const useBoard = (id: string) => {
+  return useQuery({
+    queryKey: ['board', id],
+    queryFn: () => boardsAPI.getById(id),
+    enabled: !!id,
+  });
+};
 
-      if (error) throw error;
-      setBoards(data || []);
-    } catch (error) {
-      console.error('Error fetching boards:', error);
-      toast({
-        title: "שגיאה",
-        description: "לא ניתן לטעון את הלוחות",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const createBoard = async (name: string, description?: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('boards')
-        .insert([{ name, description }])
-        .select()
-        .single();
-
-      if (error) throw error;
-      
-      setBoards(prev => [data, ...prev]);
-      toast({
-        title: "הצלחה",
-        description: "הלוח נוצר בהצלחה",
-      });
-      
-      return data;
-    } catch (error) {
+export const useCreateBoard = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (board: Omit<Board, 'id' | 'created_at' | 'updated_at' | 'owner_id'>) =>
+      boardsAPI.create(board),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['boards'] });
+      toast.success('בורד נוצר בהצלחה');
+    },
+    onError: (error) => {
       console.error('Error creating board:', error);
-      toast({
-        title: "שגיאה",
-        description: "לא ניתן ליצור את הלוח",
-        variant: "destructive",
-      });
-      return null;
-    }
-  };
+      toast.error('שגיאה ביצירת הבורד');
+    },
+  });
+};
 
-  const updateBoard = async (id: string, updates: Partial<Board>) => {
-    try {
-      const { data, error } = await supabase
-        .from('boards')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      
-      setBoards(prev => prev.map(board => board.id === id ? data : board));
-      toast({
-        title: "הצלחה",
-        description: "הלוח עודכן בהצלחה",
-      });
-      
-      return data;
-    } catch (error) {
+export const useUpdateBoard = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ id, updates }: { id: string; updates: Partial<Board> }) =>
+      boardsAPI.update(id, updates),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['boards'] });
+      queryClient.invalidateQueries({ queryKey: ['board', data.id] });
+      toast.success('בורד עודכן בהצלחה');
+    },
+    onError: (error) => {
       console.error('Error updating board:', error);
-      toast({
-        title: "שגיאה",
-        description: "לא ניתן לעדכן את הלוח",
-        variant: "destructive",
-      });
-      return null;
-    }
-  };
+      toast.error('שגיאה בעדכון הבורד');
+    },
+  });
+};
 
-  const deleteBoard = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from('boards')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-      
-      setBoards(prev => prev.filter(board => board.id !== id));
-      toast({
-        title: "הצלחה",
-        description: "הלוח נמחק בהצלחה",
-      });
-    } catch (error) {
+export const useDeleteBoard = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: (id: string) => boardsAPI.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['boards'] });
+      toast.success('בורד נמחק בהצלחה');
+    },
+    onError: (error) => {
       console.error('Error deleting board:', error);
-      toast({
-        title: "שגיאה",
-        description: "לא ניתן למחוק את הלוח",
-        variant: "destructive",
-      });
-    }
-  };
-
-  useEffect(() => {
-    fetchBoards();
-  }, []);
-
-  return {
-    boards,
-    loading,
-    createBoard,
-    updateBoard,
-    deleteBoard,
-    refetch: fetchBoards,
-  };
+      toast.error('שגיאה במחיקת הבורד');
+    },
+  });
 };

@@ -191,6 +191,41 @@ export type Database = {
           },
         ]
       }
+      board_permissions: {
+        Row: {
+          board_id: string
+          granted_at: string | null
+          granted_by: string | null
+          id: string
+          permission_type: string
+          user_id: string
+        }
+        Insert: {
+          board_id: string
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          permission_type: string
+          user_id: string
+        }
+        Update: {
+          board_id?: string
+          granted_at?: string | null
+          granted_by?: string | null
+          id?: string
+          permission_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_permissions_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       board_relationships: {
         Row: {
           created_at: string | null
@@ -318,30 +353,50 @@ export type Database = {
       }
       boards: {
         Row: {
+          board_config: Json | null
           created_at: string
           description: string | null
           id: string
           name: string
+          organization_id: string | null
+          owner_id: string
           updated_at: string
           user_id: string | null
+          visibility: string | null
         }
         Insert: {
+          board_config?: Json | null
           created_at?: string
           description?: string | null
           id?: string
           name: string
+          organization_id?: string | null
+          owner_id: string
           updated_at?: string
           user_id?: string | null
+          visibility?: string | null
         }
         Update: {
+          board_config?: Json | null
           created_at?: string
           description?: string | null
           id?: string
           name?: string
+          organization_id?: string | null
+          owner_id?: string
           updated_at?: string
           user_id?: string | null
+          visibility?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "boards_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       companies: {
         Row: {
@@ -870,6 +925,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_board_permission: {
+        Args: {
+          board_uuid: string
+          user_uuid: string
+          required_permission: string
+        }
+        Returns: boolean
+      }
       create_organization: {
         Args: { org_name: string; org_subdomain: string }
         Returns: string
