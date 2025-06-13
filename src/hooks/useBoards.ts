@@ -4,10 +4,33 @@ import { boardsAPI, Board } from '@/api/boards';
 import { toast } from 'sonner';
 
 export const useBoards = () => {
-  return useQuery({
+  const queryClient = useQueryClient();
+  
+  const boardsQuery = useQuery({
     queryKey: ['boards'],
     queryFn: boardsAPI.getAll,
   });
+
+  const createBoardMutation = useMutation({
+    mutationFn: (board: Omit<Board, 'id' | 'created_at' | 'updated_at' | 'owner_id'>) =>
+      boardsAPI.create(board),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['boards'] });
+      toast.success('בורד נוצר בהצלחה');
+    },
+    onError: (error) => {
+      console.error('Error creating board:', error);
+      toast.error('שגיאה ביצירת הבורד');
+    },
+  });
+
+  return {
+    boards: boardsQuery.data || [],
+    loading: boardsQuery.isLoading,
+    createBoard: createBoardMutation.mutateAsync,
+    isCreating: createBoardMutation.isPending,
+    error: boardsQuery.error
+  };
 };
 
 export const useBoard = (id: string) => {

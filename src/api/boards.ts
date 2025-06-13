@@ -31,7 +31,10 @@ export const boardsAPI = {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    return (data || []).map(board => ({
+      ...board,
+      visibility: board.visibility as 'private' | 'organization' | 'custom'
+    }));
   },
 
   async getById(id: string): Promise<Board | null> {
@@ -42,10 +45,13 @@ export const boardsAPI = {
       .single();
     
     if (error) throw error;
-    return data;
+    return data ? {
+      ...data,
+      visibility: data.visibility as 'private' | 'organization' | 'custom'
+    } : null;
   },
 
-  async create(board: Omit<Board, 'id' | 'created_at' | 'updated_at'>): Promise<Board> {
+  async create(board: Omit<Board, 'id' | 'created_at' | 'updated_at' | 'owner_id'>): Promise<Board> {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User not authenticated');
 
@@ -59,7 +65,10 @@ export const boardsAPI = {
       .single();
     
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      visibility: data.visibility as 'private' | 'organization' | 'custom'
+    };
   },
 
   async update(id: string, updates: Partial<Board>): Promise<Board> {
@@ -71,7 +80,10 @@ export const boardsAPI = {
       .single();
     
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      visibility: data.visibility as 'private' | 'organization' | 'custom'
+    };
   },
 
   async delete(id: string): Promise<void> {
@@ -92,7 +104,10 @@ export const boardsAPI = {
       .order('granted_at', { ascending: false });
     
     if (error) throw error;
-    return data || [];
+    return (data || []).map(permission => ({
+      ...permission,
+      permission_type: permission.permission_type as 'view' | 'edit' | 'admin'
+    }));
   },
 
   async addPermission(
@@ -115,7 +130,10 @@ export const boardsAPI = {
       .single();
     
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      permission_type: data.permission_type as 'view' | 'edit' | 'admin'
+    };
   },
 
   async updatePermission(
@@ -130,7 +148,10 @@ export const boardsAPI = {
       .single();
     
     if (error) throw error;
-    return data;
+    return {
+      ...data,
+      permission_type: data.permission_type as 'view' | 'edit' | 'admin'
+    };
   },
 
   async removePermission(id: string): Promise<void> {

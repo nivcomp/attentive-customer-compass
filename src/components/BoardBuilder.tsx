@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,12 +30,20 @@ const BoardBuilder = () => {
   const handleCreateBoard = async () => {
     if (!newBoardName.trim()) return;
     
-    const board = await createBoard(newBoardName, newBoardDescription);
-    if (board) {
-      setNewBoardName('');
-      setNewBoardDescription('');
-      setShowCreateBoard(false);
-      setSelectedBoardId(board.id);
+    try {
+      const board = await createBoard({ 
+        name: newBoardName, 
+        description: newBoardDescription,
+        visibility: 'private'
+      });
+      if (board) {
+        setNewBoardName('');
+        setNewBoardDescription('');
+        setShowCreateBoard(false);
+        setSelectedBoardId(board.id);
+      }
+    } catch (error) {
+      console.error('Failed to create board:', error);
     }
   };
 
