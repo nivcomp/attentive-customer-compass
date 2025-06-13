@@ -779,6 +779,65 @@ export type Database = {
           },
         ]
       }
+      organization_users: {
+        Row: {
+          id: string
+          joined_at: string | null
+          organization_id: string
+          role: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          joined_at?: string | null
+          organization_id: string
+          role?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          joined_at?: string | null
+          organization_id?: string
+          role?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_users_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          settings: Json | null
+          subdomain: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          settings?: Json | null
+          subdomain: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          settings?: Json | null
+          subdomain?: string
+        }
+        Relationships: []
+      }
       tenants: {
         Row: {
           created_at: string | null
@@ -811,6 +870,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_organization: {
+        Args: { org_name: string; org_subdomain: string }
+        Returns: string
+      }
       create_tenant_schema: {
         Args: { tenant_name: string; tenant_subdomain: string }
         Returns: string
