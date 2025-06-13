@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,9 +10,12 @@ import {
   Copy,
   Trash2,
   Eye,
-  Link
+  Link,
+  Link2
 } from "lucide-react";
 import CustomBoardBuilder from "./CustomBoardBuilder";
+import RelationshipBuilder from "./RelationshipBuilder";
+import RelationshipManager from "./RelationshipManager";
 
 interface PageBoard {
   id: string;
@@ -35,6 +37,7 @@ const PageBoardManager: React.FC<PageBoardManagerProps> = ({ pageId, pageName })
   const [boards, setBoards] = useState<PageBoard[]>([]);
   const [showBoardBuilder, setShowBoardBuilder] = useState(false);
   const [showSharedBoards, setShowSharedBoards] = useState(false);
+  const [showRelationshipManager, setShowRelationshipManager] = useState(false);
 
   // Mock shared boards data
   const [sharedBoards] = useState<PageBoard[]>([
@@ -125,6 +128,22 @@ const PageBoardManager: React.FC<PageBoardManagerProps> = ({ pageId, pageName })
           בורדים של {pageName}
         </h4>
         <div className="flex gap-2">
+          <Button
+            onClick={() => setShowRelationshipManager(true)}
+            variant="outline"
+            size="sm"
+            className="text-purple-600 border-purple-200 hover:bg-purple-50"
+          >
+            <Link2 className="h-4 w-4 mr-2" />
+            ניהול קישורים
+          </Button>
+          
+          <RelationshipBuilder 
+            onRelationshipCreated={(relationship) => {
+              console.log('New relationship created:', relationship);
+            }}
+          />
+          
           <Dialog open={showSharedBoards} onOpenChange={setShowSharedBoards}>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm">
@@ -291,6 +310,12 @@ const PageBoardManager: React.FC<PageBoardManagerProps> = ({ pageId, pageName })
           </Card>
         )}
       </div>
+
+      {/* Relationship Manager Modal */}
+      <RelationshipManager 
+        isOpen={showRelationshipManager}
+        onClose={() => setShowRelationshipManager(false)}
+      />
     </div>
   );
 };

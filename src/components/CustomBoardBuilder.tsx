@@ -31,9 +31,9 @@ const BOARD_TEMPLATES = [
     name: 'משימות פרויקט',
     description: 'בורד לניהול משימות וסטטוסים',
     columns: [
-      { name: 'שם המשימה', column_type: 'text', is_required: true },
-      { name: 'סטטוס', column_type: 'status', is_required: true, options: ['חדש', 'בתהליך', 'הושלם'] },
-      { name: 'אחראי', column_type: 'single_select', is_required: false, options: ['יוסי', 'שירה', 'דני'] }
+      { name: 'שם המשימה', column_type: 'text' as const, is_required: true },
+      { name: 'סטטוס', column_type: 'status' as const, is_required: true, options: ['חדש', 'בתהליך', 'הושלם'] },
+      { name: 'אחראי', column_type: 'single_select' as const, is_required: false, options: ['יוסי', 'שירה', 'דני'] }
     ],
     color: '#3B82F6'
   },
@@ -42,9 +42,9 @@ const BOARD_TEMPLATES = [
     name: 'מעקב מכירות',
     description: 'בורד למעקב אחר הזדמנויות מכירה',
     columns: [
-      { name: 'שם הלקוח', column_type: 'text', is_required: true },
-      { name: 'סכום עסקה', column_type: 'number', is_required: true },
-      { name: 'שלב', column_type: 'status', is_required: true, options: ['ליד', 'הצעה', 'משא ומתן', 'נסגר'] }
+      { name: 'שם הלקוח', column_type: 'text' as const, is_required: true },
+      { name: 'סכום עסקה', column_type: 'number' as const, is_required: true },
+      { name: 'שלב', column_type: 'status' as const, is_required: true, options: ['ליד', 'הצעה', 'משא ומתן', 'נסגר'] }
     ],
     color: '#10B981'
   },
@@ -53,9 +53,9 @@ const BOARD_TEMPLATES = [
     name: 'ניהול מלאי',
     description: 'בורד למעקב אחר מלאי ומוצרים',
     columns: [
-      { name: 'שם המוצר', column_type: 'text', is_required: true },
-      { name: 'כמות במלאי', column_type: 'number', is_required: true },
-      { name: 'תאריך עדכון', column_type: 'date', is_required: false }
+      { name: 'שם המוצר', column_type: 'text' as const, is_required: true },
+      { name: 'כמות במלאי', column_type: 'number' as const, is_required: true },
+      { name: 'תאריך עדכון', column_type: 'date' as const, is_required: false }
     ],
     color: '#F59E0B'
   },
@@ -64,9 +64,9 @@ const BOARD_TEMPLATES = [
     name: 'בורד ריק',
     description: 'בורד מותאם לחלוטין',
     columns: [
-      { name: 'עמודה 1', column_type: 'text', is_required: false },
-      { name: 'עמודה 2', column_type: 'text', is_required: false },
-      { name: 'עמודה 3', column_type: 'text', is_required: false }
+      { name: 'עמודה 1', column_type: 'text' as const, is_required: false },
+      { name: 'עמודה 2', column_type: 'text' as const, is_required: false },
+      { name: 'עמודה 3', column_type: 'text' as const, is_required: false }
     ],
     color: '#6B7280'
   }

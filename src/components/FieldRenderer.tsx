@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,7 +7,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarIcon, Upload, Image as ImageIcon, Plus, Eye, X } from "lucide-react";
+import { CalendarIcon, Upload, Image as ImageIcon, Plus, Eye, X, Search, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { DynamicBoardColumn } from "@/api/dynamicBoard";
@@ -25,6 +24,8 @@ interface FieldRendererProps {
 const FieldRenderer: React.FC<FieldRendererProps> = ({ column, value, onChange, readOnly = false }) => {
   const [showBoardLinkDialog, setShowBoardLinkDialog] = useState(false);
   const [boardLinkSearch, setBoardLinkSearch] = useState('');
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  
   const { boards } = useDynamicBoards();
   const { items: linkedItems, createItem } = useDynamicBoardItems(column.linked_board_id || null);
 
@@ -218,15 +219,36 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ column, value, onChange, 
       }
     };
 
+    const handleSelectItem = (itemId: string) => {
+      onChange(itemId);
+      setShowBoardLinkDialog(false);
+      setBoardLinkSearch('');
+    };
+
     return (
       <div className="space-y-2">
         {selectedItem && (
-          <Card className="p-2">
-            <div className="text-sm font-medium">
-              {Object.values(selectedItem.data)[0] || 'רשומה ללא שם'}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              מ: {linkedBoard?.name}
+          <Card className="p-3 bg-blue-50 border-blue-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-sm">
+                  {Object.values(selectedItem.data)[0] || 'רשומה ללא שם'}
+                </div>
+                <div className="text-xs text-blue-600 flex items-center gap-1">
+                  <span>מ: {linkedBoard?.name}</span>
+                  <ExternalLink className="h-3 w-3" />
+                </div>
+              </div>
+              {!readOnly && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => onChange(null)}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              )}
             </div>
           </Card>
         )}
@@ -235,56 +257,75 @@ const FieldRenderer: React.FC<FieldRendererProps> = ({ column, value, onChange, 
           <Dialog open={showBoardLinkDialog} onOpenChange={setShowBoardLinkDialog}>
             <DialogTrigger asChild>
               <Button variant="outline" className="w-full">
-                <Plus className="h-4 w-4 mr-2" />
-                {selectedItem ? 'שנה קישור' : `קשר ל${linkedBoard?.name || 'בורד'}`}
+                <Search className="h-4 w-4 mr-2" />
+                {selectedItem ? 'שנה קישור' : `בחר מ${linkedBoard?.name || 'בורד'}`}
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-2xl">
               <DialogHeader>
                 <DialogTitle>בחר רשומה מ{linkedBoard?.name}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <Input
-                  placeholder="חפש רשומות..."
-                  value={boardLinkSearch}
-                  onChange={(e) => setBoardLinkSearch(e.target.value)}
-                />
+                <div className="relative">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="חפש רשומות..."
+                    value={boardLinkSearch}
+                    onChange={(e) => setBoardLinkSearch(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
                 
-                <div className="max-h-60 overflow-y-auto space-y-2">
+                <div className="max-h-80 overflow-y-auto space-y-2">
+                  {filteredItems.length === 0 && !boardLinkSearch.trim() && (
+                    <div className="text-center text-gray-500 py-8">
+                      <p>אין רשומות זמינות</p>
+                      <p className="text-sm">צור רשומה חדשה או חפש רשומות קיימות</p>
+                    </div>
+                  )}
+                  
                   {filteredItems.map(item => (
                     <Card 
                       key={item.id} 
                       className={cn(
-                        "p-3 cursor-pointer hover:bg-accent",
-                        value === item.id && "bg-accent"
+                        "p-3 cursor-pointer hover:bg-accent transition-colors",
+                        value === item.id && "bg-blue-50 border-blue-200"
                       )}
-                      onClick={() => {
-                        onChange(item.id);
-                        setShowBoardLinkDialog(false);
-                        setBoardLinkSearch('');
-                      }}
+                      onClick={() => handleSelectItem(item.id)}
                     >
-                      <div className="font-medium">
-                        {Object.values(item.data)[0] || 'רשומה ללא שם'}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {Object.entries(item.data).slice(1, 3).map(([key, val]) => 
-                          `${key}: ${val}`
-                        ).join(' • ')}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="font-medium">
+                            {Object.values(item.data)[0] || 'רשומה ללא שם'}
+                          </div>
+                          <div className="text-sm text-gray-600">
+                            {Object.entries(item.data).slice(1, 3).map(([key, val]) => 
+                              `${key}: ${val}`
+                            ).join(' • ')}
+                          </div>
+                        </div>
+                        {value === item.id && (
+                          <Badge className="bg-blue-100 text-blue-800">נבחר</Badge>
+                        )}
                       </div>
                     </Card>
                   ))}
                 </div>
                 
                 {boardLinkSearch.trim() && filteredItems.length === 0 && (
-                  <Button 
-                    onClick={handleCreateNewRecord}
-                    className="w-full"
-                    variant="outline"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    צור רשומה חדשה: "{boardLinkSearch}"
-                  </Button>
+                  <div className="space-y-3">
+                    <div className="text-center text-gray-500 py-4">
+                      לא נמצאו רשומות התואמות לחיפוש
+                    </div>
+                    <Button 
+                      onClick={handleCreateNewRecord}
+                      className="w-full"
+                      variant="outline"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      צור רשומה חדשה: "{boardLinkSearch}"
+                    </Button>
+                  </div>
                 )}
               </div>
             </DialogContent>
