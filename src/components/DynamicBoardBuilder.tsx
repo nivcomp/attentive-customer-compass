@@ -169,7 +169,7 @@ const DynamicBoardBuilder = () => {
                   <CardContent>
                     <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>נוצר: {new Date(board.created_at).toLocaleDateString('he-IL')}</span>
-                      <Badge variant="outline" size="sm">
+                      <Badge variant="outline">
                         {selectedBoard?.id === board.id ? 'נבחר' : 'לחץ לבחירה'}
                       </Badge>
                     </div>
