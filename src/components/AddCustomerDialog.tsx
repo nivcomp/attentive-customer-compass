@@ -24,8 +24,7 @@ const AddCustomerDialog = ({ trigger }: AddCustomerDialogProps) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    phone: '',
-    company: ''
+    phone: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -51,13 +50,12 @@ const AddCustomerDialog = ({ trigger }: AddCustomerDialogProps) => {
       const result = await createCustomer({
         name: formData.name.trim(),
         email: formData.email.trim(),
-        phone: formData.phone.trim() || null,
-        company: formData.company.trim() || null
+        phone: formData.phone.trim() || null
       });
 
       if (result) {
         // Success - reset form and close dialog
-        setFormData({ name: '', email: '', phone: '', company: '' });
+        setFormData({ name: '', email: '', phone: '' });
         setOpen(false);
       }
     } catch (error) {
@@ -68,7 +66,7 @@ const AddCustomerDialog = ({ trigger }: AddCustomerDialogProps) => {
   };
 
   const handleCancel = () => {
-    setFormData({ name: '', email: '', phone: '', company: '' });
+    setFormData({ name: '', email: '', phone: '' });
     setOpen(false);
   };
 
@@ -120,15 +118,6 @@ const AddCustomerDialog = ({ trigger }: AddCustomerDialogProps) => {
                 value={formData.phone}
                 onChange={(e) => handleInputChange('phone', e.target.value)}
                 placeholder="050-123-4567"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="company">חברה</Label>
-              <Input
-                id="company"
-                value={formData.company}
-                onChange={(e) => handleInputChange('company', e.target.value)}
-                placeholder="שם החברה"
               />
             </div>
           </div>
