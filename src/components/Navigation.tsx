@@ -1,12 +1,12 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Users, Activity, DollarSign, Settings, BarChart3, Workflow, Layers } from 'lucide-react';
+import { Home, Users, Activity, DollarSign, Settings, BarChart3, Workflow, Layers, Phone } from 'lucide-react';
 
 const Navigation = () => {
   const navItems = [
     { to: '/', icon: Home, label: 'דף הבית' },
-    { to: '/customers', icon: Users, label: 'לקוחות' },
+    { to: '/contacts', icon: Phone, label: 'אנשי קשר' },
     { to: '/activities', icon: Activity, label: 'פעילויות' },
     { to: '/deals', icon: DollarSign, label: 'עסקאות' },
     { to: '/board-builder', icon: Layers, label: 'בונה לוחות' },
