@@ -58,47 +58,45 @@ export const tenantsAPI = {
   },
 
   async getTenantUsers(schemaName: string): Promise<TenantUser[]> {
-    // Use raw SQL query since dynamic schema tables aren't in the type definitions
-    const { data, error } = await supabase
-      .rpc('exec_sql', { 
-        query: `SELECT * FROM ${schemaName}.users ORDER BY created_at DESC` 
-      });
-    
-    if (error) {
-      // Fallback: try direct query (might work in some cases)
-      console.warn('RPC failed, trying direct query:', error);
-      const { data: fallbackData, error: fallbackError } = await supabase
+    try {
+      // Direct query to the tenant schema table
+      const { data, error } = await supabase
         .from(`${schemaName}.users` as any)
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (fallbackError) throw fallbackError;
-      return fallbackData || [];
+      if (error) {
+        console.warn('Failed to fetch tenant users:', error);
+        return [];
+      }
+      
+      // Type assertion to ensure we return the correct type
+      return (data as TenantUser[]) || [];
+    } catch (err) {
+      console.error('Error fetching tenant users:', err);
+      return [];
     }
-    
-    return data || [];
   },
 
   async getTenantProjects(schemaName: string): Promise<TenantProject[]> {
-    // Use raw SQL query since dynamic schema tables aren't in the type definitions
-    const { data, error } = await supabase
-      .rpc('exec_sql', { 
-        query: `SELECT * FROM ${schemaName}.projects ORDER BY created_at DESC` 
-      });
-    
-    if (error) {
-      // Fallback: try direct query (might work in some cases)
-      console.warn('RPC failed, trying direct query:', error);
-      const { data: fallbackData, error: fallbackError } = await supabase
+    try {
+      // Direct query to the tenant schema table
+      const { data, error } = await supabase
         .from(`${schemaName}.projects` as any)
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (fallbackError) throw fallbackError;
-      return fallbackData || [];
+      if (error) {
+        console.warn('Failed to fetch tenant projects:', error);
+        return [];
+      }
+      
+      // Type assertion to ensure we return the correct type
+      return (data as TenantProject[]) || [];
+    } catch (err) {
+      console.error('Error fetching tenant projects:', err);
+      return [];
     }
-    
-    return data || [];
   },
 
   async createTenantUser(schemaName: string, user: Omit<TenantUser, 'id' | 'created_at'>): Promise<TenantUser> {
@@ -109,7 +107,7 @@ export const tenantsAPI = {
       .single();
     
     if (error) throw error;
-    return data;
+    return data as TenantUser;
   },
 
   async createTenantProject(schemaName: string, project: Omit<TenantProject, 'id' | 'created_at'>): Promise<TenantProject> {
@@ -120,6 +118,6 @@ export const tenantsAPI = {
       .single();
     
     if (error) throw error;
-    return data;
+    return data as TenantProject;
   }
 };
