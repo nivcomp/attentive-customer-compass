@@ -2,16 +2,13 @@
 import React, { Suspense, lazy } from 'react';
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useOptimizedBoardData } from "@/hooks/useOptimizedBoardData";
-import { useOptimizedPermissions } from "@/hooks/useOptimizedPermissions";
-import BoardManagerSkeleton from "./BoardManagerSkeleton";
-import BoardManagerStats from "./BoardManagerStats";
-import RegularBoardsList from "./RegularBoardsList";
+import { useStagedBoardData } from "@/hooks/useStagedBoardData";
+import SmartLoadingIndicator from "./SmartLoadingIndicator";
+import ProgressiveBoardSection from "./ProgressiveBoardSection";
 import EmptyBoardsState from "./EmptyBoardsState";
 
 // Lazy load components that might not be immediately needed
 const BoardCreator = lazy(() => import("./BoardCreator"));
-const BoardPermissionsManager = lazy(() => import("./BoardPermissionsManager"));
 const VirtualizedBoardsList = lazy(() => import("./VirtualizedBoardsList"));
 
 const BoardManager = () => {
@@ -26,25 +23,28 @@ const BoardManager = () => {
     dynamicBoardsCount,
     customBoardsCount,
     groupBoardsByType,
-    loading,
+    isLoading,
+    loadingStage,
+    isStatsReady,
+    isRegularBoardsReady,
+    isDynamicBoardsReady,
+    isCustomBoardsReady,
     handleBoardCreated,
     deleteBoardSettings,
     getBoardTypeLabel,
-  } = useOptimizedBoardData();
-
-  const {
-    selectedBoardForPermissions,
-    handleTogglePermissions,
-  } = useOptimizedPermissions();
+  } = useStagedBoardData();
 
   const handleBoardCreatedAndClose = React.useCallback((boardId: string) => {
     handleBoardCreated(boardId);
     setShowCreator(false);
   }, [handleBoardCreated]);
 
-  if (loading) {
-    return <BoardManagerSkeleton />;
-  }
+  const boardStats = {
+    totalBoards,
+    regularBoardsCount,
+    dynamicBoardsCount,
+    customBoardsCount,
+  };
 
   return (
     <div className="space-y-6">
@@ -60,41 +60,36 @@ const BoardManager = () => {
         </Button>
       </div>
 
-      {/* סטטיסטיקות */}
-      <BoardManagerStats
-        totalBoards={totalBoards}
-        regularBoardsCount={regularBoardsCount}
-        dynamicBoardsCount={dynamicBoardsCount}
-        customBoardsCount={customBoardsCount}
+      {/* Smart Loading Indicator - Shows progress */}
+      {isLoading && <SmartLoadingIndicator loadingStage={loadingStage} />}
+
+      {/* Progressive Content Loading */}
+      <ProgressiveBoardSection
+        isStatsReady={isStatsReady}
+        isRegularBoardsReady={isRegularBoardsReady}
+        isDynamicBoardsReady={isDynamicBoardsReady}
+        isCustomBoardsReady={isCustomBoardsReady}
+        boardStats={boardStats}
+        regularBoards={regularBoards}
+        dynamicBoards={dynamicBoards}
+        groupBoardsByType={groupBoardsByType}
+        deleteBoardSettings={deleteBoardSettings}
+        getBoardTypeLabel={getBoardTypeLabel}
       />
 
-      {/* בורדים רגילים עם הרשאות */}
-      <RegularBoardsList
-        boards={regularBoards}
-        selectedBoardForPermissions={selectedBoardForPermissions}
-        onTogglePermissions={handleTogglePermissions}
-      />
-
-      {/* הצגת מנהל הרשאות */}
-      {selectedBoardForPermissions && (
+      {/* Custom Boards with Virtualization - Only after custom boards are ready */}
+      {isCustomBoardsReady && Object.keys(groupBoardsByType).length > 0 && (
         <Suspense fallback={<div className="animate-pulse h-32 bg-gray-100 rounded"></div>}>
-          <BoardPermissionsManager 
-            boardId={selectedBoardForPermissions}
+          <VirtualizedBoardsList
+            groupedBoards={groupBoardsByType}
+            onDeleteBoard={deleteBoardSettings}
+            getBoardTypeLabel={getBoardTypeLabel}
           />
         </Suspense>
       )}
 
-      {/* בורדים מקובצים לפי סוג - עם virtualization */}
-      <Suspense fallback={<div className="animate-pulse h-32 bg-gray-100 rounded"></div>}>
-        <VirtualizedBoardsList
-          groupedBoards={groupBoardsByType}
-          onDeleteBoard={deleteBoardSettings}
-          getBoardTypeLabel={getBoardTypeLabel}
-        />
-      </Suspense>
-
-      {/* הצגת empty state רק אם אין בורדים כלל */}
-      {totalBoards === 0 && (
+      {/* Empty State - Only show after everything is loaded */}
+      {!isLoading && totalBoards === 0 && (
         <EmptyBoardsState onCreateBoard={() => setShowCreator(true)} />
       )}
 
